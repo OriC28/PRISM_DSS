@@ -1,11 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
+    const data = JSON.parse(document.getElementById('iaResponseData').textContent);
     const analysisForm = document.getElementById('analysisForm');
     const resultsSection = document.getElementById('resultsSection');
     const resultsContent = document.getElementById('resultsContent');
     const cancelBtn = document.getElementById('cancelBtn');
     const exportBtn = document.getElementById('exportBtn');
     
+    console.log(data)
     // Evento para cancelar
     cancelBtn.addEventListener('click', function() {
         if (confirm('¿Estás seguro de que deseas cancelar? Los datos no guardados se perderán.')) {
@@ -20,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Aquí iría el código para generar el PDF con librerías como jsPDF
     });
     
-    // Validación y envío del formulario
     analysisForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -52,25 +53,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Simular análisis con IA (en una implementación real sería una llamada API)
         setTimeout(() => {
-            // Obtener datos del formulario
-            const formData = new FormData(analysisForm);
-            const projectData = {
-                name: formData.get('projectName'),
-                type: formData.get('projectType'),
-                use: formData.get('projectUse'),
-                budget: formData.get('projectBudget'),
-                time: formData.get('projectTime'),
-                description: formData.get('projectDescription')
-            };
-            
             // Generar resultados de análisis simulados
-            const analysisResults = generateAnalysisResults(projectData);
+            const analysisResults = generateAnalysisResults(data);
             
             // Mostrar resultados
             displayAnalysisResults(analysisResults);
         }, 2000);
     });
-    
+
     // Mostrar estado de carga
     function showLoadingState() {
         resultsSection.style.display = 'block';
@@ -85,70 +75,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Scroll a los resultados
         resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
-    
+
     // Generar resultados de análisis simulados
-    function generateAnalysisResults(projectData) {
-        // Esto es un mock - en una implementación real sería el resultado de la IA
-        const riskCategories = [
-            {
-                name: 'Riesgos Estructurales',
-                risks: [
-                    {
-                        title: 'Diseño inadecuado para el tipo de suelo',
-                        probability: 'Alta',
-                        impact: 'Crítico',
-                        description: 'Según el tipo de proyecto y ubicación, existe alta probabilidad de problemas estructurales si no se realiza un estudio de suelo adecuado.',
-                        mitigation: 'Realizar un estudio geotécnico completo antes de iniciar el diseño estructural.'
-                    },
-                    {
-                        title: 'Fallas en materiales de construcción',
-                        probability: 'Media',
-                        impact: 'Alto',
-                        description: 'Uso de materiales de calidad inferior puede comprometer la integridad estructural.',
-                        mitigation: 'Implementar controles de calidad estrictos y certificación de proveedores.'
-                    }
-                ]
-            },
-            {
-                name: 'Riesgos Financieros',
-                risks: [
-                    {
-                        title: 'Sobrecostos por inflación',
-                        probability: projectData.type === 'residencial' ? 'Alta' : 'Media',
-                        impact: 'Alto',
-                        description: 'El presupuesto actual podría ser insuficiente considerando la inflación actual en materiales de construcción.',
-                        mitigation: 'Incluir una reserva del 15% para contingencias y establecer contratos con cláusulas de ajuste.'
-                    }
-                ]
-            },
-            {
-                name: 'Riesgos Logísticos',
-                risks: [
-                    {
-                        title: 'Retrasos en entrega de materiales',
-                        probability: 'Alta',
-                        impact: 'Medio',
-                        description: 'Problemas en la cadena de suministro podrían retrasar la ejecución del proyecto.',
-                        mitigation: 'Diversificar proveedores y mantener inventario de seguridad para materiales críticos.'
-                    }
-                ]
-            }
-        ];
-        
+    function generateAnalysisResults(data) {
         return {
-            project: projectData,
-            riskCategories: riskCategories,
-            summary: {
-                totalRisks: 4,
-                highPriority: 2,
-                mediumPriority: 1,
-                lowPriority: 1
+            Proyecto: data.ProyectoAnalizado,
+            Riesgos: data.Riesgos,
+            Calculos: {
+                riesgosTotales: data.Riesgos.length,
+                Impacto: data.Riesgos.map(risk => risk.Impacto),
+                Probabilidad: data.Riesgos.map(risk => risk.Probabilidad),
             },
-            recommendations: [
-                'Realizar estudio de suelo antes de finalizar el diseño estructural.',
-                'Asignar un 15% adicional del presupuesto para contingencias.',
-                'Establecer un plan de gestión de proveedores alternativos.'
-            ]
+            Mitigaciones: data.Mitigaciones
         };
     }
     
@@ -156,56 +94,32 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayAnalysisResults(results) {
         let html = `
             <div class="analysis-summary">
-                <h4>Resumen del Análisis</h4>
-                <p>El sistema ha identificado <strong>${results.summary.totalRisks} riesgos potenciales</strong> para su proyecto "${results.project.name}".</p>
+                <h2>Resumen del Análisis</h2>
+                <p>El sistema ha identificado <strong>${results.Calculos.riesgosTotales} riesgos potenciales</strong> para su proyecto "${results.Proyecto}".</p><br>
                 <div class="summary-cards">
-                    <div class="summary-card critical">
-                        <span>${results.summary.highPriority}</span>
-                        <p>Riesgos Críticos/Altos</p>
-                    </div>
-                    <div class="summary-card medium">
-                        <span>${results.summary.mediumPriority}</span>
-                        <p>Riesgos Medios</p>
-                    </div>
-                    <div class="summary-card low">
-                        <span>${results.summary.lowPriority}</span>
-                        <p>Riesgos Bajos</p>
-                    </div>
+                    ${results.Riesgos.map(risk => 
+                        `<div class="summary-card critical">
+                            <strong>Categoría:</strong> ${risk.Categoria}<br>
+                            <p><strong>Descripción:</strong> ${risk.Descripcion}</p>
+                            <strong>Impacto:</strong> ${risk.Impacto}<br>
+                            <strong>Probabilidad:</strong> ${risk.Probabilidad}<br>
+                        </div>`
+                    ).join('')}
                 </div>
             </div>
             
             <div class="recommendations">
-                <h4>Recomendaciones Generales</h4>
+                <h2>Recomendaciones Generales</h2>
                 <ul>
-                    ${results.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                    ${
+                        results.Mitigaciones.map(
+                            rec => `<strong>Riesgo Asociado:</strong> ${rec.RiesgoAsociado}<br>
+                            <li>${rec.Accion}</li>`
+                        ).join('')
+                    }
                 </ul>
             </div>
         `;
-        
-        // Añadir categorías de riesgo
-        results.riskCategories.forEach(category => {
-            if (category.risks.length > 0) {
-                html += `
-                    <div class="risk-category">
-                        <h4>${category.name}</h4>
-                        ${category.risks.map(risk => `
-                            <div class="risk-item ${getRiskClass(risk)}">
-                                <div class="risk-title">
-                                    <span>${risk.title}</span>
-                                    <span class="risk-probability">Probabilidad: ${risk.probability}</span>
-                                </div>
-                                <p class="risk-description">${risk.description}</p>
-                                <div class="risk-mitigation">
-                                    <h5>Medida de Mitigación</h5>
-                                    <p>${risk.mitigation}</p>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-        });
-        
         resultsContent.innerHTML = html;
     }
     
