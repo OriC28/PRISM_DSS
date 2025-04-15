@@ -1,0 +1,174 @@
+
+{% extends "base.html" %}
+
+{% block title %} Registrar Proyecto - PRISM DSS {% endblock %}
+
+    {% block extra_css %}
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/registrar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% endblock %}
+</head>
+
+{% block content %}
+    
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="content-header">
+                <h2>{% block module %} Registrar Nuevo Proyecto {% endblock %}</h2>
+                <div class="breadcrumb">
+                    <span>Inicio</span> / <span class="active">{% block current_page %} Registrar Proyecto {% endblock %}</span>
+                </div>
+            </div>
+
+            <!-- Formulario de Registro -->
+            <div class="form-container">
+                <form id="projectForm" action="{% url 'register'%}" method="post">
+                    <!-- Sección Información Básica -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-info-circle"></i> Información Básica</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="projectName">Nombre del Proyecto*</label>
+                                <input type="text" id="projectName" name="projectName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="projectType">Tipo de Proyecto*</label>
+                                <select id="projectType" name="projectType" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="residencial">Residencial</option>
+                                    <option value="comercial">Comercial</option>
+                                    <option value="industrial">Industrial</option>
+                                    <option value="infraestructura">Infraestructura</option>
+                                    <option value="institucional">Institucional</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="projectStatus">Estado del Proyecto*</label>
+                                <select id="projectStatus" name="projectStatus" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="planificacion">En planificación</option>
+                                    <option value="ejecucion">En ejecución</option>
+                                    <option value="suspendido">Suspendido</option>
+                                    <option value="completado">Completado</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="projectBudget">Presupuesto*</label>
+                                <div class="input-group">
+                                    <input type="number" id="projectBudget" name="projectBudget" min="0" step="0.01" required>
+                                    <select id="currency" name="currency" class="currency-select" required>
+                                        <option value="USD">USD</option>
+                                        <option value="PEN">PEN</option>
+                                        <option value="EUR">EUR</option>
+                                        <option value="VES">VES</option>
+                                        <option value="MXN">MXN</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="projectDuration">Duración Estimada*</label>
+                                <div class="input-group">
+                                    <input type="number" id="projectDuration" name="projectDuration" min="1" required>
+                                    <select id="durationUnit" name="durationUnit" class="duration-select" required>
+                                        <option value="dias">Días</option>
+                                        <option value="semanas">Semanas</option>
+                                        <option value="meses">Meses</option>
+                                        <option value="años">Años</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="projectLocation">Ubicación Geográfica*</label>
+                                <input type="text" id="projectLocation" name="projectLocation" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="staffCount">Cantidad de Personal</label>
+                                <input type="number" id="staffCount" name="staffCount" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="projectDescription">Descripción del Proyecto*</label>
+                            <textarea id="projectDescription" name="projectDescription" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección de Riesgos -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Identificación de Riesgos</h3>
+                        <div class="risk-container" id="risksContainer">
+                            <!-- Los riesgos se agregarán dinámicamente aquí -->
+                            <div class="risk-item" data-risk-id="1">
+                                <div class="risk-header">
+                                    <h4>Riesgo #1</h4>
+                                    <button type="button" class="btn btn-remove-risk">
+                                        <i class="fas fa-times"></i> Eliminar
+                                    </button>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="riskDescription1">Descripción del Riesgo</label>
+                                        <input type="text" id="riskDescription1" name="risks[0][description]">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="riskMitigation1">Medidas de Mitigación</label>
+                                        <input type="text" id="riskMitigation1" name="risks[0][mitigation]">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="riskProbability1">Probabilidad</label>
+                                        <select id="riskProbability1" name="risks[0][probability]">
+                                            <option value="baja">Baja</option>
+                                            <option value="media">Media</option>
+                                            <option value="alta">Alta</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="riskImpact1">Impacto</label>
+                                        <select id="riskImpact1" name="risks[0][impact]">
+                                            <option value="bajo">Bajo</option>
+                                            <option value="medio">Medio</option>
+                                            <option value="alto">Alto</option>
+                                            <option value="critico">Crítico</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-add-risk" id="addRiskBtn">
+                            <i class="fas fa-plus"></i> Agregar Riesgo
+                        </button>
+                    </div>
+                    
+                    <!-- Botones del Formulario -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-cancel" id="cancelBtn">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-submit">
+                            <i class="fas fa-save"></i> Guardar Proyecto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {% load static %}
+    <script src="{% static 'scripts.js' %}"></script>
+    <script src="{% static 'js/registrar.js' %}"></script>
+{% endblock %}
+</html>
