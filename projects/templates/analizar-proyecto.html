@@ -4,7 +4,6 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="/static/css/analizar.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 {% endblock %}
 
 {% block content %}
@@ -25,44 +24,38 @@
         <!-- Formulario de Análisis -->
         <div class="form-section">
             <h3><i class="fas fa-edit"></i> Datos del Proyecto a Analizar</h3>
-            <form id="analysisForm">
+            <form id="analysisForm", method="POST">
+                {% csrf_token %}
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="projectName">Nombre del Proyecto*</label>
-                        <input type="text" id="projectName" name="projectName" required>
+                        <label for="projectName">{{ form.project_name.label}}</label>
+                        {{form.project_name}}
                     </div>
 
                     <div class="form-group">
-                        <label for="projectType">Tipo de Proyecto*</label>
-                        <select id="projectType" name="projectType" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="residencial">Residencial</option>
-                            <option value="comercial">Comercial</option>
-                            <option value="industrial">Industrial</option>
-                            <option value="infraestructura">Infraestructura</option>
-                            <option value="institucional">Institucional</option>
-                        </select>
+                        <label for="projectType">{{form.project_type.label}}</label>
+                        {{form.project_type}}
                     </div>
 
                     <div class="form-group">
-                        <label for="projectUse">Uso o Función*</label>
-                        <input type="text" id="projectUse" name="projectUse" required>
+                        <label for="projectUse">{{form.project_function.label}}</label>
+                        {{form.project_function}}
                     </div>
 
                     <div class="form-group">
-                        <label for="projectBudget">Presupuesto (USD)*</label>
-                        <input type="number" id="projectBudget" name="projectBudget" min="0" step="0.01" required>
+                        <label for="projectBudget">{{form.estimate.label}}</label>
+                        {{form.estimate}}
                     </div>
 
                     <div class="form-group">
-                        <label for="projectTime">Tiempo Estipulado (meses)*</label>
-                        <input type="number" id="projectTime" name="projectTime" min="1" required>
+                        <label for="projectTime">{{form.time.label}}</label>
+                        {{form.time}}
                     </div>
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="projectDescription">Descripción Detallada*</label>
-                    <textarea id="projectDescription" name="projectDescription" rows="5" required></textarea>
+                    <label for="projectDescription">{{form.project_description.label}}</label>
+                    {{form.project_description}}
                     <p class="hint">Describe el proyecto con el mayor detalle posible para un análisis más preciso.</p>
                 </div>
 
@@ -86,7 +79,8 @@
                 </button>
             </div>
 
-            <div class="results-content" id="resultsContent">
+            <div class="results-content" id="resultsContent"></div>
+                
                 <!-- Los resultados se cargarán aquí dinámicamente -->
             </div>
         </div>
@@ -95,5 +89,6 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="js/analizar.js"></script>
+    {{ data|json_script:"iaResponseData" }} <!--Permite utilizar los datos en analizar.js-->
+    <script src="/static/js/analizar.js"></script>
 {% endblock %}

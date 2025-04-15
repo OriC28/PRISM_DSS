@@ -6,6 +6,11 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
+.risk-strong{
+    color: rgba(231, 11, 11, 0.63);
+    font-weight: 600;
+}
+
 /* Form Section */
 .form-section h3 {
     font-size: 1.2rem;
