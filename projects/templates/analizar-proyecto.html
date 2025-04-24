@@ -21,35 +21,47 @@
 
     <!-- Formulario y Resultados -->
     <div class="analysis-container">
+        <div class="non-field-errors">
+            {{ form.non_field_errors }}
+        </div>
         <!-- Formulario de Análisis -->
         <div class="form-section">
             <h3><i class="fas fa-edit"></i> Datos del Proyecto a Analizar</h3>
-            <form id="analysisForm", method="POST">
+            <form id="analysisForm" method="POST" action="">
                 {% csrf_token %}
+
+                <div id="general-errors" class="alert alert-danger" style="display: none;"></div>
+                <div id="non-field-errors" class="alert alert-danger" style="display: none;"></div>
+
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="projectName">{{ form.project_name.label}}</label>
+                        <label for="id_project_name">{{ form.project_name.label}}</label>
                         {{form.project_name}}
+                        <div class="field-error" id="project_name_error" style="display: none; color: red;">{{form.project_name.errors}}</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="projectType">{{form.project_type.label}}</label>
+                        <label for="id_project_type">{{form.project_type.label}}</label>
                         {{form.project_type}}
+                        <div class="field-error" id="project_type_error" style="display: none; color: red;"></div>
                     </div>
 
                     <div class="form-group">
-                        <label for="projectUse">{{form.project_function.label}}</label>
+                        <label for="id_project_function">{{form.project_function.label}}</label>
                         {{form.project_function}}
+                        <div class="field-error" id="project_function_error" style="display: none; color: red;"></div>
                     </div>
 
                     <div class="form-group">
-                        <label for="projectBudget">{{form.estimate.label}}</label>
+                        <label for="id_estimate">{{form.estimate.label}}</label>
                         {{form.estimate}}
+                        <div class="field-error" id="estimate_error" style="display: none; color: red;"></div>
                     </div>
 
                     <div class="form-group">
-                        <label for="projectTime">{{form.time.label}}</label>
+                        <label for="id_time">{{form.time.label}}</label>
                         {{form.time}}
+                        <div class="field-error" id="time_error" style="display: none; color: red;"></div>
                     </div>
                 </div>
 
@@ -89,6 +101,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    {{ data|json_script:"iaResponseData" }} <!--Permite utilizar los datos en analizar.js-->
     <script src="/static/js/analizar.js"></script>
 {% endblock %}

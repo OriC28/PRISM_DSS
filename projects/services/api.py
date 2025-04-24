@@ -1,9 +1,19 @@
 from openai import OpenAI
 import openai
+import requests
+from urllib.request import urlopen
+from urllib.error import URLError
 import json
 import os
 
-def get_prompt(data, db: dict) -> str:
+def check_internet_connection():
+    try:
+        urlopen('https://www.google.com', timeout=5)
+        return True
+    except URLError:
+        return False
+
+def get_prompt(data: dict, db: str) -> str:
 
     db = json.loads(db)
     db = json.dumps(db, ensure_ascii=False)
@@ -51,8 +61,12 @@ def get_prompt(data, db: dict) -> str:
 
     return prompt
 
-def get_IAresponse(form_data, db_data: list) -> dict:
-    """ try:
+def get_IAresponse(form_data: dict, db_data: str) -> dict:
+    
+    """ if not check_internet_connection():
+        raise ConnectionError("No hay conexión a Internet. Por favor, verifica tu conexión.")
+
+    try:
         prompt = get_prompt(form_data, db_data)
 
         client = OpenAI(
@@ -62,27 +76,42 @@ def get_IAresponse(form_data, db_data: list) -> dict:
 
         completion = client.chat.completions.create(
             timeout=10,
-            model="deepseek/deepseek-r1-zero:free",
+            model="google/gemini-2.0-flash-exp:free",
             messages=[
                 {
                     'role': 'user',
-                    'content': prompt   
+                    'content': [
+                        {
+                            'type': 'text',
+                            'text': prompt
+                        }
+                    ] 
                 }
             ],
-            response_format={'type': 'json_object'}
+            response_format={'type': 'json_object'},
+            temperature=0.6
         )
-        if completion.choices is not None:
-            response =  completion.choices[0].message.content
-            return json.loads(response)
-        else:
+        if not completion.choices:
             raise ValueError("No se recibió una respuesta válida de la IA.")
+        
+        try:
+            return json.loads(completion.choices[0].message.content)
+        except json.JSONDecodeError:
+            raise ValueError("La respuesta de la IA no tiene una estructura válida.")
 
-    except openai.APIConnectionError as connection_error:
-        print("Ha habido un error en la conexión: ", connection_error)
+    except requests.exceptions.Timeout:
+        raise ConnectionError("Tiempo de espera agotado al conectar con el servicio de IA.")
 
-    except openai.APIStatusError as api_status_error:
-        print("Ha habido un error. El servicio está caído: ", api_status_error) """
+    except requests.exceptions.ConnectionError:
+        raise ConnectionError("Error de conexión al intentar contactar la API.")
 
+    except openai.NotFoundError as e:
+        print(e)
+        raise ValueError("El modelo solicitado no está disponible.")
+
+    except Exception as e:
+        raise Exception(f"Error en el servicio de IA: {e}") """
+    
     response = {
         "ProyectoAnalizado": "Hospital Regional Cusco",
         "Riesgos": [
@@ -150,6 +179,4 @@ def get_IAresponse(form_data, db_data: list) -> dict:
             }
         ]
     }
-
-    return response
-    
+    return response 
