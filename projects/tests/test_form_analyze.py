@@ -12,7 +12,7 @@ class FormAnalyzeTest(TestCase):
             'project_name': 'Condominios Las Brisas',
             'project_type': 'Residencial',
             'project_function': 'Viviendas multifamiliares',
-            'estimate': 2000000,
+            'estimate': '2000000',
             'time': 36,
             'project_description': 'Condominios de lujo en la playa con piscina y gimnasio.'
         }
