@@ -9,7 +9,7 @@ class FormAnalyze(forms.Form):
         min_length=3,
         validators=[
             RegexValidator(
-                regex=r'^[a-zA-ZäÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙ00-9-\s]+$',
+                regex=r'^[a-zA-ZäÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ0-9-\s]+$',
                 message="Sólo se permiten letras, números y guiones."
             )
         ],
@@ -43,7 +43,7 @@ class FormAnalyze(forms.Form):
         min_length=4,
         validators=[
             RegexValidator(
-                regex=r'^[a-zA-ZäÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙ0\s]+$',
+                regex=r'^[a-zA-ZäÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ\s]+$',
                 message="La función del proyecto debe contener solo letras."
             )
         ],
@@ -77,7 +77,7 @@ class FormAnalyze(forms.Form):
         max_length=255,
         validators=[
             RegexValidator(
-                regex=r"^[a-zA-ZäÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙ0-9-\s.,:;¬!'\"()[\]{}@#&\+\*\/_]+$",
+                regex=r"^[a-zA-ZäÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ0-9-\s.,:;¬!'\"()[\]{}@#&\+\*\/_]+$",
                 message="Sólo se permiten letras, números y guiones."
             )
         ],   

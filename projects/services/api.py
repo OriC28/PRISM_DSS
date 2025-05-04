@@ -63,7 +63,7 @@ def get_prompt(data: dict, db: str) -> str:
 
 def get_IAresponse(form_data: dict, db_data: str) -> dict:
     
-    """ if not check_internet_connection():
+    if not check_internet_connection():
         raise ConnectionError("No hay conexión a Internet. Por favor, verifica tu conexión.")
 
     try:
@@ -110,7 +110,10 @@ def get_IAresponse(form_data: dict, db_data: str) -> dict:
         raise ValueError("El modelo solicitado no está disponible.")
 
     except Exception as e:
-        raise Exception(f"Error en el servicio de IA: {e}") """
+        raise Exception(f"Error en el servicio de IA: {e}")
+
+    
+    # DATOS DE PRUEBAS PARA NO GASTAR TOKENS
     
     response = {
         "ProyectoAnalizado": "Hospital Regional Cusco",
