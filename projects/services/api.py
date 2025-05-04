@@ -62,7 +62,7 @@ def get_IAresponse(form_data, db_data: list) -> dict:
 
         completion = client.chat.completions.create(
             timeout=10,
-            model="deepseek/deepseek-r1-zero:free",
+            model="google/gemini-2.0-flash-exp:free",
             messages=[
                 {
                     'role': 'user',

@@ -1,4 +1,4 @@
-
+-- Active: 1745066946470@@127.0.0.1@3306@dss
 {% extends "base.html" %}
 
 {% block title %} Registrar Proyecto - PRISM DSS {% endblock %}
@@ -24,99 +24,113 @@
 
             <!-- Formulario de Registro -->
             <div class="form-container">
-                <form id="projectForm" action="" method="post">
+                <form id="projectForm" action="{% url 'register'%}" method="POST">
                     {% csrf_token %}
+                    
+                    
                     <!-- Sección Información Básica -->
                     <div class="form-section">
                         <h3><i class="fas fa-info-circle"></i> Información Básica</h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="projectName">{{form.project_name.label}}</label>
-                                {{form.project_name}}
+                                <label for="projectName">{{project_form.project_name.label}}</label>
+                                {{project_form.project_name}}
                             </div>
                             
                             <div class="form-group">
-                                <label for="projectType">{{form.project_type.label}}</label>
-                                {{form.project_type}}
+                                <label for="projectType">{{project_form.project_type.label}}</label>
+                                {{project_form.project_type}}
                             </div>
                             
                             <div class="form-group">
-                                <label for="projectStatus">{{form.project_status.label}}</label>
-                                {{form.project_status}}
+                                <label for="projectStatus">{{project_form.project_status.label}}</label>
+                                {{project_form.project_status}}
                             </div>
                             
                             <div class="form-group">
-                                <label for="projectBudget">{{form.project_budget.label}}</label>
+                                <label for="projectBudget">{{project_form.project_budget.label}}</label>
                                 <div class="input-group">
                                     <!-- esta es el input de la moneda -->
-                                    {{form.project_budget}}
+                                    {{project_form.project_budget}}
                                     <!-- esta es el select de las unidades de la moneda -->
-                                    {{form.project_budget_unit}}
+                                    {{project_form.project_budget_unit}}
                                 </div>
                             </div>
                             
                             <div class="form-group">
-                                <label for="projectDuration">{{form.project_duration.label}}</label>
+                                <label for="projectDuration">{{project_form.project_duration.label}}</label>
                                 <div class="input-group">
-                                    {{form.project_duration}}
-                                    {{form.project_duration_unit}}
+                                    {{project_form.project_duration}}
+                                    {{project_form.project_duration_unit}}
                                 </div>
                             </div>
                             
                             <div class="form-group">
-                                <label for="projectLocation">{{form.project_location.label}}</label>
-                                {{form.project_location}}
+                                <label for="projectLocation">{{project_form.project_location.label}}</label>
+                                {{project_form.project_location}}
                             </div>
                             
                             <div class="form-group">
-                                <label for="staffCount">{{form.staffCount.label}}</label>
-                                {{form.staffCount}}
+                                <label for="staffCount">{{project_form.staffCount.label}}</label>
+                                {{project_form.staffCount}}
                             </div>
                         </div>
                         
                         <div class="form-group full-width">
-                            <label for="projectDescription">{{form.project_description.label}}</label>
-                            {{form.project_description}}
+                            <label for="projectDescription">{{project_form.project_description.label}}</label>
+                            {{project_form.project_description}}
                         </div>
                     </div>
                     
-                    <!-- Sección de Riesgos -->
+                                    <!-- Sección de Riesgos -->
                     <div class="form-section">
                         <h3><i class="fas fa-exclamation-triangle"></i> Identificación de Riesgos</h3>
                         <div class="risk-container" id="risksContainer">
-                            <!-- Los riesgos se agregarán dinámicamente aquí -->
-                            <div class="risk-item" data-risk-id="1">
-                                <div class="risk-header">
-                                    <h4>Riesgo #1</h4>
-                                    <button type="button" class="btn btn-remove-risk">
-                                        <i class="fas fa-times"></i> Eliminar
-                                    </button>
+
+                            {{ project_risk.management_form }}
+                            {% for form in project_risk %}
+                                <div class="risk-item" data-risk-id="{{ forloop.counter }}">
+                                    <div class="risk-header">
+                                        <h4>Riesgo #{{ forloop.counter }}</h4>
+                                        <button type="button" class="btn btn-remove-risk">
+                                            <i class="fas fa-times"></i> Eliminar
+                                        </button>
+                                    </div>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="{{ form.riskDescription.id_for_label }}">{{ form.riskDescription.label }}</label>
+                                            {{ form.riskDescription }}
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="{{ form.riskMitigation.id_for_label }}">{{ form.riskMitigation.label }}</label>
+                                            {{ form.riskMitigation }}
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="{{ form.riskProbability.id_for_label }}">{{ form.riskProbability.label }}</label>
+                                            {{ form.riskProbability }}
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="{{ form.riskImpact.id_for_label }}">{{ form.riskImpact.label }}</label>
+                                            {{ form.riskImpact }}
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="{{ form.riskStatus.id_for_label }}">{{ form.riskStatus.label }}</label>
+                                            {{ form.riskStatus }}
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="{{ form.riskCategory.id_for_label }}">{{ form.riskCategory.label }}</label>
+                                            {{ form.riskCategory }}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="riskDescription1">{{form.riskDescription.label}}</label>
-                                        {{form.riskDescription}}
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="riskMitigation1">{{form.riskMitigation.label}}</label>
-                                        {{form.riskMitigation}}
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="riskProbability1">{{form.riskProbability.label}}</label>
-                                        {{form.riskProbability}}
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="riskImpact1">{{form.riskImpact.label}}</label>
-                                        {{form.riskImpact}}
-                                    </div>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
-                        
-                        <button type="button" class="btn btn-add-risk" id="addRiskBtn">
+                        <button type="button" id="addRiskButton" class="btn btn-add-risk">
                             <i class="fas fa-plus"></i> Agregar Riesgo
                         </button>
                     </div>
@@ -138,7 +152,10 @@
 
 {% block extra_js %}
     {% load static %}
-    <script src="{% static 'scripts.js' %}"></script>
+    
+        <!-- Contenido de la página -->
+        {% comment %} <script src="{% static 'js/scripts.js' %}"></script> {% endcomment %}
+    
     <script src="{% static 'js/registrar.js' %}"></script>
 {% endblock %}
 </html>
