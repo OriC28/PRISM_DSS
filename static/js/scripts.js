@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Initialize table with all data
-    populateTable(projectsData);
+    //populateTable(projectsData);
     
     // Pagination variables
     let currentPage = 1;
@@ -210,10 +210,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // In a real application, you would fetch this data from an API
-    document.getElementById('activeProjects').textContent = projectsData.filter(p => p.status === 'active').length;
-    document.getElementById('highRisks').textContent = projectsData.reduce((acc, project) => acc + (project.risks > 5 ? 1 : 0), 0);
-    document.getElementById('completedProjects').textContent = '5'; // Sample data
-    document.getElementById('delayedProjects').textContent = projectsData.filter(p => p.status === 'delayed').length;
+   // document.getElementById('activeProjects').textContent = projectsData.filter(p => p.status === 'active').length;
+    //document.getElementById('highRisks').textContent = projectsData.reduce((acc, project) => acc + (project.risks > 5 ? 1 : 0), 0);
+   // document.getElementById('delayedProjects').textContent = projectsData.filter(p => p.status === 'delayed').length;
     
     // Simulate chart data (in a real app, you would use a library like Chart.js)
     function simulateCharts() {

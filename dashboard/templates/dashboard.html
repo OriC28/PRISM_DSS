@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load date_filter %}
+{% block title %}PRISM DSS - Gestión de Riesgos en Construcción{%endblock%}
+
+{%block content%}
+    <div class="app-container">
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="content-header">
+                <h2>Dashboard</h2>
+                <div class="breadcrumb">
+                    <span>Inicio</span> / <span class="active">Dashboard</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="card">
+                        <div class="card-icon blue">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Proyectos Activos</h3>
+                            <p id="activeProjects">{{projects|count:"estado_proyecto,!Finalizado,!Atrasado"}}</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon orange">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Riesgos Altos</h3>
+                            <p id="highRisks">{{risks|count:"impacto,Alto"}}</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Proyectos Completados</h3>
+                            <p id="completedProjects">{{projects|count:"estado_proyecto,Finalizado"}}</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon red">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Atrasados</h3>
+                            <p id="delayedProjects">{{projects|count:"estado_proyecto,Atrasado"}}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-container">
+                        <h3>Riesgos por Categoría</h3>
+                        <div class="chart" id="risksByCategoryChart">
+                            <!-- Chart will be rendered here -->
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Impacto de Riesgos</h3>
+                        <div class="chart" id="riskImpactChart">
+                            <!-- Chart will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projects Table -->
+                <div class="projects-table-container">
+                    <div class="table-header">
+                        <h3>Proyectos Recientes</h3>
+                        <div class="table-actions">
+                            <input type="text" placeholder="Buscar proyecto..." id="projectSearch">
+                            <button class="btn"><i class="fas fa-filter"></i> Filtrar</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="projectsTable">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Ubicación</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Fecha Fin</th>
+                                    <th>Riesgos</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Table data will be loaded here -->
+                                 {% for project in projects %}
+                                 <tr>
+                                    <td>{{project.nombre_proyecto}}</td>
+                                    <td>{{project.ubicacion_geografica}}</td>
+                                    <td>{{project.fecha_creacion}}</td>
+                                    <td>{{finish_dates|get_data:project.proyecto_id}}</td>
+                                    {% with attr_value="proyecto,"|concatenate:project.proyecto_id%}
+                                    <td>{{risks|count:attr_value}}</td>
+                                    {%endwith%}
+                                    {%if project.estado_proyecto == 'Finalizado'%}
+                                    <td><span class="status active" style="white-space: nowrap;">{{project.estado_proyecto}}</span></td>
+                                    {%else%}
+                                    <td><span class="status pending" style="white-space: nowrap;">{{project.estado_proyecto}}</span></td>
+                                    {%endif%}
+                                    {%if project.estado_proyecto == 'Atrasado'%}
+                                    <td><span class="status delayed" style="white-space: nowrap;">{{project.estado_proyecto}}</span></td>
+                                    {%endif%}
+                                    <td><button class="btn"><i class="fas fa-eye"></i></button></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-footer">
+                        <div class="pagination-info">
+                            Mostrando <span id="startItem">1</span> a <span id="endItem">5</span> de <span id="totalItems">12</span> proyectos
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="btn" id="prevPage"><i class="fas fa-chevron-left"></i></button>
+                            <span id="currentPage">1</span>
+                            <button class="btn" id="nextPage"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+{%endblock%}
+</body>
+</html>
