@@ -11,6 +11,8 @@ from django.db import models
 class AccionesMitigacion(models.Model):
     mitigacion_id = models.AutoField(primary_key=True)
     nombre_mitigacion = models.CharField(max_length=45)
+    def __str__(self):
+        return self.nombre_mitigacion
 
     class Meta:
         managed = False
@@ -20,6 +22,8 @@ class AccionesMitigacion(models.Model):
 class Categorias(models.Model):
     categoria_id = models.AutoField(primary_key=True)
     nombre_categoria = models.CharField(max_length=85)
+    def __str__(self):
+        return self.nombre_categoria
 
     class Meta:
         managed = False
@@ -29,6 +33,7 @@ class Categorias(models.Model):
 class CategoriasRiesgos(models.Model):
     riesgo = models.ForeignKey('Riesgos', models.DO_NOTHING, db_column='riesgo')
     categoria = models.ForeignKey(Categorias, models.DO_NOTHING, db_column='categoria')
+    
 
     class Meta:
         managed = False
@@ -49,6 +54,8 @@ class Proyectos(models.Model):
     ubicacion_geografica = models.CharField(max_length=150)
     fecha_creacion = models.DateField()
 
+    def __str__(self):
+        return self.nombre_proyecto
     class Meta:
         managed = False
         db_table = 'proyectos'
@@ -71,6 +78,8 @@ class Riesgos(models.Model):
 class TipoProyecto(models.Model):
     tipo_proyecto_id = models.AutoField(primary_key=True)
     nombre_tipo = models.CharField(max_length=45)
+    def __str__(self):
+        return self.nombre_tipo
 
     class Meta:
         managed = False

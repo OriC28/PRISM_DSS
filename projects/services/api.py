@@ -1,19 +1,9 @@
 from openai import OpenAI
 import openai
-import requests
-from urllib.request import urlopen
-from urllib.error import URLError
 import json
 import os
 
-def check_internet_connection():
-    try:
-        urlopen('https://www.google.com', timeout=5)
-        return True
-    except URLError:
-        return False
-
-def get_prompt(data: dict, db: str) -> str:
+def get_prompt(data, db: dict) -> str:
 
     db = json.loads(db)
     db = json.dumps(db, ensure_ascii=False)
@@ -80,30 +70,19 @@ def get_IAresponse(form_data: dict, db_data: str) -> dict:
             messages=[
                 {
                     'role': 'user',
-                    'content': [
-                        {
-                            'type': 'text',
-                            'text': prompt
-                        }
-                    ] 
+                    'content': prompt   
                 }
             ],
-            response_format={'type': 'json_object'},
-            temperature=0.6
+            response_format={'type': 'json_object'}
         )
-        if not completion.choices:
+        if completion.choices is not None:
+            response =  completion.choices[0].message.content
+            return json.loads(response)
+        else:
             raise ValueError("No se recibió una respuesta válida de la IA.")
-        
-        try:
-            return json.loads(completion.choices[0].message.content)
-        except json.JSONDecodeError:
-            raise ValueError("La respuesta de la IA no tiene una estructura válida.")
 
-    except requests.exceptions.Timeout:
-        raise ConnectionError("Tiempo de espera agotado al conectar con el servicio de IA.")
-
-    except requests.exceptions.ConnectionError:
-        raise ConnectionError("Error de conexión al intentar contactar la API.")
+    except openai.APIConnectionError as connection_error:
+        print("Ha habido un error en la conexión: ", connection_error)
 
     except openai.NotFoundError as e:
         print(e)
@@ -182,4 +161,6 @@ def get_IAresponse(form_data: dict, db_data: str) -> dict:
             }
         ]
     }
-    return response 
+
+    return response
+    
