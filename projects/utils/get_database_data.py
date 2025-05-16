@@ -24,7 +24,7 @@ def get_data(project_type: str):
             p.proyecto_id
         ORDER BY 
             p.fecha_creacion DESC
-        LIMIT 10;
+        LIMIT 5;
     """
     with connection.cursor() as cursor:
         cursor.execute(query, [project_type])

@@ -1,11 +1,11 @@
 from django.shortcuts import render
-from django.contrib import messages
+from django.views.decorators.http import require_POST
 from .forms import FormAnalyze
+from django.http import JsonResponse
+import json
+
 from .utils.get_database_data import get_data
 from .services.api import get_IAresponse
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST, require_GET
-import json
 
 # Create your views here.
 

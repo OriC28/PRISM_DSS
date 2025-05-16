@@ -1,166 +1,48 @@
-from openai import OpenAI
-import openai
+from google.genai import errors
+from google import genai
 import json
 import os
 
-def get_prompt(data, db: dict) -> str:
+from .check_connection import check_internet_connection
+from .get_prompt import get_prompt
+from .response_structure import ProjectAnalysis
 
-    db = json.loads(db)
-    db = json.dumps(db, ensure_ascii=False)
-
-    prompt = """Analiza el proyecto ingresado por el usuario, este tiene los siguientes
-    datos de entrada: {data} y además, compáralo con los proyectos almacenados en la base de datos: {db}. 
-
-    Ten en consideración que si {db} es vacío, debes analizar el proyecto solo con el conocimiento general de la IA sobre riesgos típicos para este tipo de proyectos y sus respectivas mitigaciones.
-
-    En contraste, si {db} no es vacío, identifica todos los riesgos potenciales basados en las coincidencias en Tipo/Función/Presupuesto/Duración/Descripción con proyectos históricos. Luego, genera mitigaciones basadas en estrategias aplicadas en proyectos similares de la base de datos.
-
-    Asegúrate de:
-    1. No repetir riesgos o mitigaciones.
-    2. Que cada riesgo tenga al menos una mitigación asociada.
-    3. Si no hay riesgos o mitigaciones, devuelve arrays vacíos.
-    4. Explicar adecuadamente las acciones de mitigación y su relación con los riesgos identificados.
-
-   **Instrucciones críticas:**
-    1. **Formato de salida**: Devuelve **únicamente un string JSON válido** (sin `\boxed{{}}`, sin marcas como ```json`, sin comentarios).
-    2. **Escape de caracteres**: 
-    - Usa comillas dobles (`"`) para strings y escápalas si aparecen dentro de valores (ej: `\"texto\"`).
-    3. **Idioma**: Responde únicamente en español.
-    - Evita saltos de línea (`\n`) en valores.
-    4. **Estructura exigida**:
-    {{
-        "ProyectoAnalizado": "nombre_del_proyecto",
-        "Riesgos": [
-            {{
-                "Categoria": "categoria_riesgo",
-                "Descripcion": "descripcion_del_riesgo",
-                "Impacto": "Alto/Medio/Bajo/Crítico",
-                "Probabilidad": "X%"
-            }}
-        ],
-        "Mitigaciones": [
-            {{
-                "RiesgoAsociado": "descripcion_del_riesgo_asociado",
-                "Accion": "accion_de_mitigacion"
-            }}
-        ]
-    }}""".format(
-            data=json.dumps(data, ensure_ascii=False),
-            db=db
-        )
-
-    return prompt
 
 def get_IAresponse(form_data: dict, db_data: str) -> dict:
-    
-    if not check_internet_connection():
-        raise ConnectionError("No hay conexión a Internet. Por favor, verifica tu conexión.")
+    """
+    This function sends a request to the IA API (Gemini) and returns the response.
 
+    Attributes:
+        form_data (dict): The data from the form (sended by the user).
+        db_data (str): The data from the database with similar projects to the one selected by the user.
+    """
+    check_internet_connection()
+    prompt = get_prompt(form_data, db_data)
+    
     try:
-        prompt = get_prompt(form_data, db_data)
-
-        client = OpenAI(
-            base_url = "https://openrouter.ai/api/v1",
-            api_key = os.getenv('API_KEY')
+        client = genai.Client(api_key=os.getenv('API_KEY'))
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt,
+            config={
+                'response_mime_type': 'application/json',
+                'response_schema': list[ProjectAnalysis]
+            }
         )
 
-        completion = client.chat.completions.create(
-            timeout=10,
-            model="google/gemini-2.0-flash-exp:free",
-            messages=[
-                {
-                    'role': 'user',
-                    'content': prompt   
-                }
-            ],
-            response_format={'type': 'json_object'}
-        )
-        if completion.choices is not None:
-            response =  completion.choices[0].message.content
-            return json.loads(response)
-        else:
-            raise ValueError("No se recibió una respuesta válida de la IA.")
+        if not response.text:
+            raise ValueError("Respuesta vacía de la IA. Intenta nuevamente.")
+        
+        if not response.text.startswith('['):
+            raise ValueError("La respuesta de la IA no tiene un formato válido.")
+        
+        return json.loads(response.text)
 
-    except openai.APIConnectionError as connection_error:
-        print("Ha habido un error en la conexión: ", connection_error)
-
-    except openai.NotFoundError as e:
-        print(e)
-        raise ValueError("El modelo solicitado no está disponible.")
-
+    except json.JSONDecodeError:
+        raise ValueError("Error al decodificar la respuesta de la IA.")
+    
+    except errors.APIError as e:
+        raise ValueError(f"Error de API: {e.code} - {e.message}")
+    
     except Exception as e:
-        raise Exception(f"Error en el servicio de IA: {e}")
-
-    
-    # DATOS DE PRUEBAS PARA NO GASTAR TOKENS
-    
-    response = {
-        "ProyectoAnalizado": "Hospital Regional Cusco",
-        "Riesgos": [
-            {
-            "Categoria": "Recursos Humanos",
-            "Descripcion": "Conflictos sindicales entre trabajadores que podrían retrasar el proyecto.",
-            "Impacto": "Alto",
-            "Probabilidad": "30%"
-            },
-            {
-            "Categoria": "Tecnológico",
-            "Descripcion": "Inestabilidad geotécnica que podría afectar la construcción del hospital.",
-            "Impacto": "Crítico",
-            "Probabilidad": "15%"
-            },
-            {
-            "Categoria": "Social",
-            "Descripcion": "Protestas comunitarias que podrían retrasar el proyecto.",
-            "Impacto": "Alto",
-            "Probabilidad": "50%"
-            },
-            {
-            "Categoria": "Legal",
-            "Descripcion": "Incumplimiento de normativas de salud y seguridad en la construcción de un hopital.",
-            "Impacto": "Crítico",
-            "Probabilidad": "50%"
-            },
-            {
-            "Categoria": "Logística",
-            "Descripcion": "Retrasos en la entrega de los suministros necesarios para la construcción.",
-            "Impacto": "Alto",
-            "Probabilidad": "40%"
-            },
-            {
-            "Categoria": "Financiero",
-            "Descripcion": "Aumento inesperado en los costos de materiales de construcción.",
-            "Impacto": "Alto",
-            "Probabilidad": "35%"
-            }
-        ],
-        "Mitigaciones": [
-            {
-            "RiesgoAsociado": "Conflictos sindicales",
-            "Accion": "Capacitar al personal y mantener un diálogo constante con sindicatos."
-            },
-            {
-            "RiesgoAsociado": "Inestabilidad geotécnica",
-            "Accion": "Realizar estudios geotécnicos detallados y considerar un diseño redundante."
-            },
-            {
-            "RiesgoAsociado": "Protestas comunitarias",
-            "Accion": "Realizar consultas comunitarias y mantener una comunicación transparente con la comunidad."
-            },
-            {
-            "RiesgoAsociado": "Cumplimiento de normativas de salud y seguridad",
-            "Accion": "Realizar estrictas inspecciones de salud y seguridad, y formar al personal en estas normativas."
-            },
-            {
-            "RiesgoAsociado": "Retrasos en la entrega de suministros",
-            "Accion": "Establecer contratos con múltiples proveedores de suministros para garantizar la entrega oportuna."
-            },
-            {
-            "RiesgoAsociado": "Aumento en los costos de materiales",
-            "Accion": "Establecer acuerdos de precios fijos con proveedores para mitigar la variabilidad de costos."
-            }
-        ]
-    }
-
-    return response
-    
+        raise ValueError(f"Error inesperado: {str(e)}")

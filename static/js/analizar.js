@@ -12,6 +12,17 @@ const RiskAnalysisModule = (function() {
         analysisForm: document.getElementById('analysisForm')
     };
 
+    // Añadir al inicio del módulo
+    const escapeHtml = (text) => {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+        };
+
+        const escapeAttribute = (value) => {
+        return String(value).replace(/"/g, '&quot;');
+    };
+
     // Clases CSS utilizadas
     const CSS_CLASSES = {
         ERROR: 'is-invalid',
@@ -217,11 +228,21 @@ const RiskAnalysisModule = (function() {
 
     /**
      * Muestra los resultados del análisis en la interfaz
-     * @param {Object} results - Resultados del análisis
+     * @param {Array} analysisDataArray - Array que contiene el objeto con los resultados del análisis.
+     * @param {string} project_name - Nombre del proyecto.
      */
-    const displayAnalysisResults = (results) => {
-        const risks = results.Riesgos || [];
-        const recommendations = results.Mitigaciones || [];
+    const displayAnalysisResults = (analysisDataArray, project_name) => {
+        // Validar la estructura de datos recibida
+        if (!Array.isArray(analysisDataArray) || analysisDataArray.length === 0 || typeof analysisDataArray[0] !== 'object' || analysisDataArray[0] === null) {
+            console.error('Estructura de datos inválida pasada a displayAnalysisResults:', analysisDataArray);
+            DOM.resultsContent.innerHTML = '<div class="alert alert-danger">Error: Los datos recibidos del análisis no tienen el formato esperado o están vacíos.</div>';
+            return;
+        }
+
+        const analysisObject = analysisDataArray[0]; // Obtener el objeto principal del array
+
+        const risks = analysisObject.Riesgos || [];
+        const recommendations = analysisObject.Mitigaciones || [];
        
         const riskCategories = groupRisksByCategory(risks);
         const criticalRisksCount = countRisksByImpact(risks, 'Crítico');
@@ -231,7 +252,7 @@ const RiskAnalysisModule = (function() {
 
         let html = `
             <div class="analysis-summary">
-                <h3>Análisis de Riesgos para: ${results.ProyectoAnalizado}</h3>
+                <h3>Análisis de Riesgos para: ${escapeHtml(project_name)}</h3>
                 <div class="risk-stats">
                     <p>Total de riesgos identificados: <strong>${risks.length}</strong></p>
                     <div class="risk-counters">
@@ -260,8 +281,8 @@ const RiskAnalysisModule = (function() {
                 <div class="recommendations-grid">
                     ${recommendations.map(mitigacion => `
                         <div class="recommendation-card">
-                            <h5>${mitigacion.RiesgoAsociado}</h5>
-                            <p>${mitigacion.Accion}</p>
+                            <h5>${escapeHtml(mitigacion.RiesgoAsociado)}</h5>
+                            <p>${escapeHtml(mitigacion.Accion)}</p>
                         </div>
                     `).join('')}
                 </div>
@@ -273,17 +294,17 @@ const RiskAnalysisModule = (function() {
             riskCategories.forEach(category => {
                 html += `
                     <div class="risk-category-section">
-                        <h4 class="category-title">${category.name}</h4>
+                        <h4 class="category-title">${escapeHtml(category.name)}</h4>
                         <div class="risk-cards">
                             ${category.risks.map(risk => `
                                 <div class="risk-card ${getRiskClass(risk)}">
                                     <div class="risk-header">
-                                        <h5>${risk.Descripcion}</h5>
-                                        <span class="risk-probability">Probabilidad: ${risk.Probabilidad}</span>
+                                        <h5>${escapeHtml(risk.Descripcion)}</h5>
+                                        <span class="risk-probability">Probabilidad: ${escapeHtml(risk.Probabilidad)}</span>
                                     </div>
                                     <div class="risk-details">
                                         <div class="impact-badge ${getRiskClass(risk)}">
-                                            Impacto: ${risk.Impacto}
+                                            Impacto: ${escapeHtml(risk.Impacto)}
                                         </div>
                                     </div>
                                 </div>
@@ -304,7 +325,7 @@ const RiskAnalysisModule = (function() {
      */
     const handleCancel = () => {
         if (confirm('¿Estás seguro de que deseas cancelar? Los datos no guardados se perderán.')) {
-            window.location.href = 'dashboard.html';
+            window.location.href = 'dashboard.html'; // Ajusta si es necesario
         }
     };
     
@@ -329,7 +350,7 @@ const RiskAnalysisModule = (function() {
         try {
             showLoadingState();
     
-            const response = await fetch("/analizar-proyecto/procesar/", {
+            const response = await fetch("/analizar-proyecto/procesar/", { // Asegúrate que esta URL sea correcta
                 method: "POST",
                 headers: {
                     "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
@@ -339,9 +360,9 @@ const RiskAnalysisModule = (function() {
             });
             
             hideLoadingState();
-    
-            const results = await response.json();
-    
+            const results = await response.json(); // results = { success: true, data: [{...}] }
+            console.log("Datos recibidos del backend:", results); // Para depuración
+
             if (!response.ok) {
                 if (results.errors || results.non_field_errors) {
                     displayFormErrors(results);
@@ -350,31 +371,37 @@ const RiskAnalysisModule = (function() {
                 
                 // Mostrar errores generales de la respuesta
                 if (results.error) {
-                    DOM.resultsContent.innerHTML = `<div class="alert alert-danger">${results.error}</div>`;
+                    DOM.resultsContent.innerHTML = `<div class="alert alert-danger">${escapeHtml(results.error)}</div>`;
                     return;
                 }
+                 // Si no es ok y no hay errores formateados, mostrar un error genérico
+                DOM.resultsContent.innerHTML = `<div class="alert alert-danger">Error ${response.status}: ${response.statusText}</div>`;
+                return;
             }
             
-            displayAnalysisResults(results.data);
+            // Verificar que results.data exista y sea un array antes de pasarlo
+            if (results.success && results.data && Array.isArray(results.data)) {
+                displayAnalysisResults(results.data, formData.get('project_name'));
+            } else {
+                console.error("La respuesta del backend no tiene la estructura esperada:", results);
+                DOM.resultsContent.innerHTML = `<div class="alert alert-danger">Error: La respuesta del servidor no fue la esperada.</div>`;
+            }
+
         } catch (error) {
             hideLoadingState();
+            console.error("Error en la solicitud fetch:", error);
             
-            let errorMessage = "Error al procesar la solicitud";
+            let errorMessage = "Error al procesar la solicitud. Intenta de nuevo más tarde.";
             
-            // Solo manejar errores de red (cuando ni siquiera llega al backend)
             if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
-                errorMessage = "Error de conexión. Verifica tu internet.";
+                errorMessage = "Error de conexión. Verifica tu conexión a internet e inténtalo de nuevo.";
             } 
-            // Para respuestas del backend (incluyendo ConnectionError de Django)
-            else if (error.response?.data?.errors) {
-                errorMessage = error.response.data.errors.join(", ");
-            }
             // Para otros errores con mensaje
             else if (error.message) {
                 errorMessage = error.message;
             }
         
-            DOM.resultsContent.innerHTML = `<div class="alert alert-danger">${errorMessage}</div>`;
+            DOM.resultsContent.innerHTML = `<div class="alert alert-danger">${escapeHtml(errorMessage)}</div>`;
         }
         
     };
