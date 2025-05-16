@@ -2,3 +2,8 @@
 .env
 # Dependencias
 /.venv
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd 
