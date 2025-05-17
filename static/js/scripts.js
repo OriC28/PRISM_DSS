@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
             actionsCell.appendChild(deleteBtn);
         });
     }
-    
+    //sample table data 
     // Initialize table with all data
     //populateTable(projectsData);
     
