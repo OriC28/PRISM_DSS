@@ -1,6 +1,7 @@
 import http.client
 
 def check_internet_connection()-> None:
+    """Checks if the internet connection is available by sending a HEAD request to Google."""
     conn = http.client.HTTPConnection("www.google.com", timeout=5)
     try:
         conn.request("HEAD", "/")
