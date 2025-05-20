@@ -229,93 +229,140 @@ const RiskAnalysisModule = (function() {
     /**
      * Muestra los resultados del análisis en la interfaz
      * @param {Array} analysisDataArray - Array que contiene el objeto con los resultados del análisis.
-     * @param {string} project_name - Nombre del proyecto.
      */
-    const displayAnalysisResults = (analysisDataArray, project_name) => {
-        // Validar la estructura de datos recibida
+    const displayAnalysisResults = (analysisDataArray) => {
+        // Validación de datos (mantener la existente)
         if (!Array.isArray(analysisDataArray) || analysisDataArray.length === 0 || typeof analysisDataArray[0] !== 'object' || analysisDataArray[0] === null) {
             console.error('Estructura de datos inválida pasada a displayAnalysisResults:', analysisDataArray);
             DOM.resultsContent.innerHTML = '<div class="alert alert-danger">Error: Los datos recibidos del análisis no tienen el formato esperado o están vacíos.</div>';
             return;
         }
 
-        const analysisObject = analysisDataArray[0]; // Obtener el objeto principal del array
-
+        const analysisObject = analysisDataArray[0];
         const risks = analysisObject.Riesgos || [];
         const recommendations = analysisObject.Mitigaciones || [];
-       
         const riskCategories = groupRisksByCategory(risks);
-        const criticalRisksCount = countRisksByImpact(risks, 'Crítico');
-        const highRisksCount = countRisksByImpact(risks, 'Alto');
-        const mediumRisksCount = countRisksByImpact(risks, 'Medio');
-        const lowRisksCount = countRisksByImpact(risks, 'Bajo');
+        const analysisSource = analysisObject.AnalysisType || "Análisis de Riesgos";
 
         let html = `
-            <div class="analysis-summary">
-                <h3>Análisis de Riesgos para: ${escapeHtml(project_name)}</h3>
-                <div class="risk-stats">
-                    <p>Total de riesgos identificados: <strong>${risks.length}</strong></p>
-                    <div class="risk-counters">
-                        <div class="risk-counter critical">
-                            <span class="count">${criticalRisksCount}</span>
-                            <span class="label">Críticos</span>
-                        </div>
-                        <div class="risk-counter high">
-                            <span class="count">${highRisksCount}</span>
-                            <span class="label">Altos</span>
-                        </div>
-                        <div class="risk-counter medium">
-                            <span class="count">${mediumRisksCount}</span>
-                            <span class="label">Medios</span>
-                        </div>
-                        <div class="risk-counter low">
-                            <span class="count">${lowRisksCount}</span>
-                            <span class="label">Bajos</span>
-                        </div>
+            <!-- Sección de resumen ejecutivo -->
+            <div class="executive-summary">
+                <h3 class="section-title">
+                    <i class="fas fa-clipboard-check"></i> Resumen Ejecutivo
+                </h3>
+                
+                <div class="analysis-source">
+                    <i class="fas fa-database"></i>${escapeHtml(analysisSource)}
+                </div>
+                
+                <div class="summary-grid">
+                    <div class="summary-card total-risks">
+                        <h4>Total de Riesgos</h4>
+                        <div class="summary-value">${risks.length}</div>
+                        <p class="summary-description">Identificados en el proyecto</p>
+                    </div>
+                    
+                    <div class="summary-card critical">
+                        <h4>Riesgos Críticos</h4>
+                        <div class="summary-value">${countRisksByImpact(risks, 'Crítico')}</div>
+                        <p class="summary-description">Requieren atención inmediata</p>
+                    </div>
+                    
+                    <div class="summary-card high">
+                        <h4>Riesgos Altos</h4>
+                        <div class="summary-value">${countRisksByImpact(risks, 'Alto')}</div>
+                        <p class="summary-description">Prioridad alta</p>
+                    </div>
+                    
+                    <div class="summary-card medium">
+                        <h4>Riesgos Medios</h4>
+                        <div class="summary-value">${countRisksByImpact(risks, 'Medio')}</div>
+                        <p class="summary-description">Vigilar periódicamente</p>
+                    </div>
+                    
+                    <div class="summary-card low">
+                        <h4>Riesgos Bajos</h4>
+                        <div class="summary-value">${countRisksByImpact(risks, 'Bajo')}</div>
+                        <p class="summary-description">Bajo impacto</p>
+                    </div>
+                    
+                    <div class="summary-card recommendations">
+                        <h4>Acciones Recomendadas</h4>
+                        <div class="summary-value">${recommendations.length}</div>
+                        <p class="summary-description">Para mitigar riesgos</p>
                     </div>
                 </div>
             </div>
-            
-            <div class="recommendations-section">
-                <h4>Plan de Mitigación</h4>
-                <div class="recommendations-grid">
-                    ${recommendations.map(mitigacion => `
-                        <div class="recommendation-card">
-                            <h5>${escapeHtml(mitigacion.RiesgoAsociado)}</h5>
-                            <p>${escapeHtml(mitigacion.Accion)}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-        
-        // Añadir categorías de riesgo si existen
-        if (riskCategories.length > 0) {
-            riskCategories.forEach(category => {
-                html += `
-                    <div class="risk-category-section">
-                        <h4 class="category-title">${escapeHtml(category.name)}</h4>
+
+            ${generateRiskCategories(riskCategories)}
+            ${generateMitigationPlan(recommendations)}
+            `;
+
+            DOM.resultsContent.innerHTML = html;
+    };
+                
+    // Función separada para generar categorías de riesgo
+    const generateRiskCategories = (riskCategories) => {
+        return `
+            <div class="risk-categories">
+                <h3 class="section-title">
+                    <i class="fas fa-layer-group"></i> Riesgos por Categoría
+                </h3>
+                
+                ${riskCategories.map(category => `
+                    <div class="category-section">
+                        <h4 class="category-title">
+                            <span class="category-name">${escapeHtml(category.name)}</span>
+                            <span class="risk-count">${category.risks.length} riesgo(s)</span>
+                        </h4>
+                        
                         <div class="risk-cards">
                             ${category.risks.map(risk => `
                                 <div class="risk-card ${getRiskClass(risk)}">
                                     <div class="risk-header">
                                         <h5>${escapeHtml(risk.Descripcion)}</h5>
-                                        <span class="risk-probability">Probabilidad: ${escapeHtml(risk.Probabilidad)}</span>
+                                        <div class="risk-meta">
+                                            <span class="probability-badge">
+                                                <i class="fas fa-chart-line"></i> Probabilidad: ${escapeHtml(risk.Probabilidad)}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="risk-details">
                                         <div class="impact-badge ${getRiskClass(risk)}">
-                                            Impacto: ${escapeHtml(risk.Impacto)}
+                                            <i class="fas fa-bolt"></i> Impacto: ${escapeHtml(risk.Impacto)}
                                         </div>
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
-                `;
-            });
-        }
-        
-        DOM.resultsContent.innerHTML = html;
+                `).join('')}
+            </div>
+        `;
+    };
+
+    // Función separada para generar el plan de mitigación
+    const generateMitigationPlan = (recommendations) => {
+        return `
+            <div class="mitigation-plan">
+                <h3 class="section-title">
+                    <i class="fas fa-shield-alt"></i> Plan de Mitigación
+                </h3>
+                <div class="recommendations-container">
+                    ${recommendations.map((mitigacion, index) => `
+                        <div class="recommendation-card">
+                            <div class="recommendation-header">
+                                <span class="recommendation-number">${index + 1}</span>
+                                <h4>${escapeHtml(mitigacion.RiesgoAsociado)}</h4>
+                            </div>
+                            <div class="recommendation-content">
+                                <p><strong>Acción recomendada:</strong> ${escapeHtml(mitigacion.Accion)}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
     };
 
     // ==================== MANEJADORES DE EVENTOS ====================
@@ -381,7 +428,7 @@ const RiskAnalysisModule = (function() {
             
             // Verificar que results.data exista y sea un array antes de pasarlo
             if (results.success && results.data && Array.isArray(results.data)) {
-                displayAnalysisResults(results.data, formData.get('project_name'));
+                displayAnalysisResults(results.data);
             } else {
                 console.error("La respuesta del backend no tiene la estructura esperada:", results);
                 DOM.resultsContent.innerHTML = `<div class="alert alert-danger">Error: La respuesta del servidor no fue la esperada.</div>`;

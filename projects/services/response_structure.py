@@ -27,5 +27,6 @@ class Mitigations(BaseModel):
     Accion: str
 
 class ProjectAnalysis(BaseModel):
+    AnalysisType: str # Based on DB or General IA knowledge
     Riesgos: list[Risks]
     Mitigaciones: list[Mitigations]
