@@ -1,7 +1,53 @@
-from django import forms
 from django.core.validators import RegexValidator
+from django import forms
+
 
 class FormAnalyze(forms.Form):
+    """Form to analyze a project based on its name, type, function, budget, time and description."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        groups = {
+            "Residencial": [
+                ("Vivienda unifamiliar", "Vivienda unifamiliar"),
+                ("Apartamentos", "Apartamentos (Multifamiliar)"),
+                ("Conjuntos residenciales", "Conjuntos residenciales"),
+            ],
+            "Comercial": [
+                ("Centro comercial", "Centro comercial"),
+                ("Oficinas", "Oficinas"),
+                ("Hoteles", "Hoteles"),
+            ],
+            "Industrial": [
+                ("Parque industrial", "Parque industrial"),
+                ("Nave industrial", "Nave industrial"),
+                ("Almacén logístico", "Almacén logístico"),
+                ("Planta de producción", "Planta de producción")
+            ],
+            "Infraestructura": [
+                ("Carretera", "Carretera"),
+                ("Puente", "Puente"),
+                ("Aeropuerto", "Aeropuerto"),
+            ],
+            "Institucional": [
+                ("Hospital", "Hospital"),
+                ("Escuela",  "Escuela"),
+                ("Universidad", "Universidad"),
+                ("Edificio gubernamental", "Edificio gubernamental"),
+                ("Centro comunitario", "Centro comunitario")
+            ]
+        }
+        # Initialize the choices for the project function field
+        choices = []
+
+        # Add the group names as choices and the options as sub-choices
+        for group_name, options in groups.items():
+            choices.append((group_name, []))
+            choices.extend(options)
+        # Set the choices for the project function field
+        self.fields['project_function'].choices = choices
+
+
     project_name = forms.CharField(
         label="Nombre de Proyecto",
         required=True,
@@ -26,7 +72,7 @@ class FormAnalyze(forms.Form):
             ('Residencial', 'Residencial'),
             ('Comercial', 'Comercial'),
             ('Industrial', 'Industrial'),
-            ('Infraestructura', 'Infraeustructura'),
+            ('Infraeustructura', 'Infraeustructura'),
             ('Institucional', 'Institucional')
         ],
         initial='Residencial',
@@ -36,23 +82,16 @@ class FormAnalyze(forms.Form):
         }
     )
 
-    project_function = forms.CharField(
-        label="Función o Uso", 
+    project_function = forms.ChoiceField(
+        label="Función o Uso",
         required=True,
-        max_length=100,
-        min_length=4,
-        validators=[
-            RegexValidator(
-                regex=r'^[a-zA-ZäÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ\s]+$',
-                message="La función del proyecto debe contener solo letras."
-            )
-        ],
+        choices=[],
         error_messages={
             'required': 'Este campo es obligatorio',
-            'max_length': 'La función o uso no puede exceder los 100 caracteres',
-            'min_length': 'La función o uso debe tener al menos 4 caracteres'
+            'invalid_choice': 'Función o uso no válido.'
         }
     )
+
     estimate = forms.FloatField(
         label="Presupuesto (USD)",
         required=True,

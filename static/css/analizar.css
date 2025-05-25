@@ -1,37 +1,85 @@
-/* Estilos para errores */
-.is-invalid {
-    border-color: #dc3545 !important;
-}
+/* ==========================================================================
+   Estilos para la página de Análisis de Proyecto con IA
+   ========================================================================== */
 
-.error-message {
-    color: #dc3545;
-    font-size: 0.875em;
-    margin-top: 0.25rem;
+/* Variables de color y transición (asumiendo que están definidas globalmente o en base.css) */
+/*
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --success-color: #2ecc71;
+    --info-color: #3498db; // Similar a primary, ajustar si es necesario
+    --warning-color: #f1c40f;
+    --danger-color: #e74c3c;
+    --white: #ffffff;
+    --black: #333333;
+    --dark-color: #555555;
+    --gray: #95a5a6;
+    --light-gray: #ecf0f1;
+    --transition: all 0.3s ease;
 }
+*/
 
-.alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 1rem;
-    border-radius: 0.25rem;
-}
+/* ==================== ESTILOS GENERALES DEL CONTENEDOR Y ERRORES ==================== */
 
-/* Analysis Container */
+/* Contenedor principal del contenido de análisis */
 .analysis-container {
     background-color: var(--white);
     border-radius: 8px;
     padding: 30px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px; /* Espacio al final del contenedor */
 }
 
-.risk-strong{
-    color: rgba(231, 11, 11, 0.63);
-    font-weight: 600;
+/* Estilos para inputs inválidos (con errores) */
+.is-invalid {
+    border-color: var(--danger-color) !important; /* Usar variable de color */
 }
 
-/* Form Section */
+/* Estilos para los mensajes de error específicos de campo */
+.error-message {
+    color: var(--danger-color); /* Usar variable de color */
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+    display: block; /* Asegurarse de que ocupe su propia línea */
+}
+
+/* Estilos para los contenedores de errores generales (alert-danger) */
+.alert-danger {
+    color: #721c24; /* Rojo oscuro para el texto */
+    background-color: #f8d7da; /* Fondo rojo claro */
+    border-color: #f5c6cb; /* Borde rojo */
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+    /* Estilos para que se muestren y oculten via JS */
+    display: none;
+    /* Estilo para el resaltado temporal usado en JS (opcional) */
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.5); /* Usar color similar a danger */
+    transition: box-shadow 0.3s ease-in-out; /* Transición suave para el resaltado */
+}
+
+/* Remover el box-shadow cuando la clase de resaltado temporal es removida */
+.alert-danger:not(.highlight-error) {
+     box-shadow: none;
+}
+
+
+/* Clase temporal para resaltar el primer error con scroll */
+.highlight-error {
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.4); /* Color primary con transparencia */
+     /* Nota: La transición ya está en los elementos afectados, esto solo aplica el estilo */
+}
+
+
+/* ==================== SECCIÓN DEL FORMULARIO ==================== */
+
+/* Contenedor de la sección del formulario */
+.form-section {
+    margin-bottom: 30px; /* Espacio antes de la sección de resultados */
+}
+
+/* Título de la sección del formulario */
 .form-section h3 {
     font-size: 1.2rem;
     color: var(--black);
@@ -39,27 +87,34 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    border-bottom: 1px solid #eee; /* Separador visual */
+    padding-bottom: 10px;
 }
 
+/* Ícono en el título del formulario */
 .form-section h3 i {
     color: var(--primary-color);
 }
 
+/* Grid para organizar los campos del formulario */
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Columnas flexibles */
     gap: 20px;
     margin-bottom: 20px;
 }
 
+/* Estilo general para grupos de formulario (label + input/select/textarea) */
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 0; /* Eliminado el margin-bottom aquí ya que el gap del grid lo maneja */
 }
 
+/* Grupo de formulario que ocupa todo el ancho en el grid */
 .form-group.full-width {
-    grid-column: 1 / -1;
+    grid-column: 1 / -1; /* Ocupa desde la primera hasta la última columna */
 }
 
+/* Etiqueta de los campos del formulario */
 .form-group label {
     display: block;
     margin-bottom: 8px;
@@ -68,6 +123,7 @@
     font-size: 0.9rem;
 }
 
+/* Estilos para inputs, selects y textareas */
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -76,22 +132,25 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 0.95rem;
-    transition: var(--transition);
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Transición para focus */
 }
 
+/* Estilos al enfocar inputs, selects y textareas */
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2); /* Sombra suave con color primary */
 }
 
+/* Estilo específico para el textarea */
 .form-group textarea {
     min-height: 120px;
-    resize: vertical;
+    resize: vertical; /* Permitir redimensionamiento vertical */
 }
 
+/* Texto de ayuda o sugerencia debajo de algunos campos */
 .hint {
     font-size: 0.8rem;
     color: var(--gray);
@@ -99,38 +158,61 @@
     font-style: italic;
 }
 
-/* Form Actions */
+/* Contenedor de los botones de acción del formulario */
 .form-actions {
     display: flex;
-    justify-content: flex-end;
-    gap: 15px;
+    justify-content: flex-end; /* Alinear botones a la derecha */
+    gap: 15px; /* Espacio entre botones */
     padding-top: 20px;
+    border-top: 1px solid #eee; /* Separador visual */
+    margin-top: 20px;
 }
 
+/* Estilo general para los botones */
+.form-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espacio entre ícono y texto */
+}
+
+/* Estilo específico para el botón Cancelar */
 .btn-cancel {
     background-color: var(--gray);
     color: var(--white);
 }
 
 .btn-cancel:hover {
-    background-color: #7f8c8d;
+    background-color: #7f8c8d; /* Tono más oscuro de gris */
 }
 
+/* Estilo específico para el botón Analizar */
 .btn-analyze {
-    background-color: var(--info-color);
+    background-color: var(--info-color); /* O var(--primary-color) */
+    color: var(--white);
 }
 
 .btn-analyze:hover {
-    background-color: #2980b9;
+    background-color: #2980b9; /* Tono más oscuro de info/primary */
 }
 
-/* Results Section */
+/* ==================== SECCIÓN DE RESULTADOS DEL ANÁLISIS ==================== */
+
+/* Contenedor principal de la sección de resultados */
 .results-section {
     margin-top: 40px;
     padding-top: 30px;
     border-top: 1px solid #eee;
+    /* Inicialmente oculto, se muestra con JS */
+    display: none;
 }
 
+/* Encabezado de la sección de resultados (Título y botón de exportar) */
 .results-header {
     display: flex;
     justify-content: space-between;
@@ -138,6 +220,7 @@
     margin-bottom: 20px;
 }
 
+/* Título dentro del encabezado de resultados (puede no usarse si el título está dentro del contenido) */
 .results-header h3 {
     font-size: 1.2rem;
     color: var(--black);
@@ -146,253 +229,399 @@
     gap: 10px;
 }
 
+/* Ícono en el título de resultados */
 .results-header h3 i {
     color: var(--success-color);
 }
 
+/* Estilo para el botón de Exportar Informe */
 .btn-export {
     background-color: var(--secondary-color);
     color: var(--white);
     display: flex;
     align-items: center;
     gap: 8px;
+    padding: 10px 20px; /* Ajustar padding para consistencia */
+    border-radius: 5px; /* Ajustar border-radius */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: none; /* Asegurarse de que no tiene borde */
 }
 
 .btn-export:hover {
-    background-color: #1a252f;
+    background-color: #1a252f; /* Tono más oscuro */
 }
 
-/* Results Content */
+/* Contenedor donde se cargan dinámicamente los resultados HTML */
 .results-content {
-    background-color: var(--light-gray);
+    background-color: var(--light-gray); /* Un fondo sutil para el área de resultados */
     border-radius: 5px;
     padding: 20px;
-}
-/* ==================== */
-/* ANÁLISIS DE RESULTADOS - Mejoras */
-/* ==================== */
-
-.analysis-summary {
-    background-color: var(--white);
-    padding: 20px;
-    border-radius: 5px;
-    margin-bottom: 25px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* Flex-direction column por defecto para apilar las secciones de resultados */
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* Espacio entre las secciones de resultados (resumen, categorías, mitigación) */
 }
 
-.analysis-summary h3 {
-    font-size: 1.1rem;
-    color: var(--black);
-    margin-bottom: 15px;
+/* ==================== ESTILOS PARA EL CONTENIDO DE RESULTADOS ==================== */
+
+/* Título general de cada sección dentro de los resultados */
+.section-title {
+    font-size: 1.2rem;
+    color: var(--dark-color);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.risk-stats {
+/* Ícono en el título de sección */
+.section-title i {
+    color: var(--primary-color); /* Usar primary color para íconos de sección */
+}
+
+/* Indicador de la fuente del análisis */
+.analysis-source {
+    background: #f8f9fa; /* Fondo gris muy claro */
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    color: #555; /* Color de texto */
+    border-left: 3px solid var(--primary-color); /* Borde izquierdo distintivo */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.analysis-source i {
+     color: var(--primary-color); /* Ícono con color primary */
+}
+
+/* --- Resumen Ejecutivo --- */
+.executive-summary {
+    background: var(--white); /* Fondo blanco para el resumen */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Sombra suave */
+    /* Ya no necesita margin-bottom si se usa gap en results-content */
+}
+
+/* Grid para las tarjetas de resumen */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Columnas flexibles */
+    gap: 15px; /* Espacio entre tarjetas */
+}
+
+/* Estilo base para cada tarjeta de resumen */
+.summary-card {
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transición al pasar el ratón */
+    min-height: 120px; /* Altura mínima para consistencia */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrar contenido verticalmente */
+    border-left: 4px solid; /* Borde izquierdo para indicar categoría/tipo */
+}
+
+.summary-card:hover {
+    transform: translateY(-5px); /* Efecto de levitación */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Sombra más pronunciada al pasar el ratón */
+}
+
+/* Título de la tarjeta de resumen */
+.summary-card h4 {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    color: var(--dark-color);
+}
+
+/* Valor numérico grande en la tarjeta de resumen */
+.summary-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    line-height: 1; /* Altura de línea ajustada */
+}
+
+/* Descripción debajo del valor en la tarjeta de resumen */
+.summary-description {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin-top: auto; /* Empuja la descripción hacia abajo si hay espacio */
+}
+
+/* Colores específicos para cada tipo de tarjeta de resumen */
+.summary-card.total-risks { background: #e3f2fd; border-left-color: #1976d2; color: #1976d2; } /* Azul claro */
+.summary-card.critical { background: #ffebee; border-left-color: #cf455e; color: #cf455e; } /* Rojo claro */
+.summary-card.high { background: #fff3e0; border-left-color: #ff7a00; color: #ff7a00; } /* Naranja claro */
+.summary-card.medium { background: #fff8e1; border-left-color: #d29e00; color: #d29e00; } /* Amarillo/Oro claro */
+.summary-card.low { background: #e8f5e9; border-left-color: #19a598; color: #19a598; } /* Verde claro */
+.summary-card.recommendations { background: #e1f5fe; border-left-color: #0288d1; color: #0288d1; } /* Cian claro */
+
+/* Ajustes de color para el valor y la descripción dentro de las tarjetas de resumen */
+.summary-card.total-risks .summary-value, .summary-card.total-risks h4 { color: #1976d2; }
+.summary-card.critical .summary-value, .summary-card.critical h4 { color: #cf455e; }
+.summary-card.high .summary-value, .summary-card.high h4 { color: #ff7a00; }
+.summary-card.medium .summary-value, .summary-card.medium h4 { color: #d29e00; }
+.summary-card.low .summary-value, .summary-card.low h4 { color: #19a598; }
+.summary-card.recommendations .summary-value, .summary-card.recommendations h4 { color: #0288d1; }
+
+
+/* --- Categorías de Riesgo --- */
+.risk-categories {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    /* Ya no necesita margin-bottom si se usa gap en results-content */
+}
+
+/* Sección para cada categoría individual */
+.category-section {
+    margin-bottom: 30px; /* Espacio entre secciones de categoría */
+}
+
+.category-section:last-child {
+    margin-bottom: 0; /* No hay margen después de la última categoría */
+}
+
+/* Título de la categoría (Nombre y Contador de riesgos) */
+.category-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 1rem;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background: #f5f5f5; /* Fondo gris claro */
+    border-radius: 5px;
+    font-size: 1rem;
 }
 
-.risk-stats p {
-    font-size: 0.95rem;
+/* Nombre de la categoría */
+.category-name {
+    font-weight: 600;
     color: var(--dark-color);
 }
 
-.risk-counters {
-    display: flex;
-    gap: 1rem;
+/* Contador de riesgos dentro del título de la categoría */
+.risk-count {
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 3px 10px;
+    border-radius: 20px; /* Forma de píldora */
+    font-size: 0.8rem;
+    font-weight: normal;
 }
 
-.risk-counter {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: bold;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 80px;
-}
-
-.risk-counter .count {
-    font-size: 1.5rem;
-    line-height: 1;
-}
-
-.risk-counter .label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    margin-top: 3px;
-}
-
-.risk-counter.critical {
-    background-color: #ffc9d3;
-    color: #cf455e;
-    border: 1px solid #cf455e;
-}
-
-.risk-counter.high {
-    background-color: #ffe6d8;
-    color: #ff7a00;
-    border: 1px solid #ff7a00;
-}
-
-.risk-counter.medium {
-    background-color: #ffecd1;
-    color: #d29e00;
-    border: 1px solid #d29e00;
-}
-
-.risk-counter.low {
-    background-color: #d1ffe5;
-    color: #19a598;
-    border: 1px solid #19a598;
-}
-
-/* Recomendaciones */
-.recommendations-section {
-    margin: 30px 0;
-}
-
-.recommendations-section h4 {
-    font-size: 1.1rem;
-    color: var(--black);
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #ddd;
-}
-
-.recommendations-grid {
+/* Contenedor de las tarjetas de riesgo dentro de una categoría */
+.risk-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Columnas flexibles para las tarjetas */
+    gap: 15px; /* Espacio entre tarjetas de riesgo */
 }
 
-.recommendation-card {
-    background-color: var(--white);
-    border-radius: 5px;
+/* Estilo base para cada tarjeta de riesgo */
+.risk-card {
+    background: var(--white); /* Fondo blanco */
+    border-radius: 8px;
     padding: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    border-left: 3px solid var(--success-color);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sombra suave */
+    border-left: 4px solid; /* Borde izquierdo para indicar impacto */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transición al pasar el ratón */
+    display: flex; /* Usar flexbox para organizar contenido */
+    flex-direction: column;
 }
 
-.recommendation-card h5 {
-    font-size: 0.95rem;
-    color: var(--black);
+/* Efecto al pasar el ratón sobre la tarjeta de riesgo */
+.risk-card:hover {
+    transform: translateY(-3px); /* Levitar ligeramente */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Sombra más pronunciada */
+}
+
+/* Colores del borde izquierdo para las tarjetas de riesgo según el impacto */
+.risk-card.critical { border-left-color: #cf455e; }
+.risk-card.high { border-left-color: #ff7a00; }
+.risk-card.medium { border-left-color: #d29e00; }
+.risk-card.low { border-left-color: #19a598; }
+
+/* Encabezado dentro de la tarjeta de riesgo */
+.risk-header {
     margin-bottom: 10px;
 }
 
-.recommendation-card p {
-    font-size: 0.85rem;
-    color: var(--dark-color);
-    line-height: 1.5;
-}
-
-/* Categorías de riesgo */
-.risk-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 15px;
-    margin-top: 15px;
-}
-
-.risk-card {
-    background: white;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    border-left: 4px solid;
-    transition: transform 0.2s ease;
-}
-
-.risk-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-
-.risk-card.critical {
-    border-left-color: #cf455e;
-}
-
-.risk-card.high {
-    border-left-color: #ff7a00;
-}
-
-.risk-card.medium {
-    border-left-color: #d29e00;
-}
-.risk-card.low {
-    border-left-color: #19a598;
-}
-
-.risk-header {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 12px;
-}
-
+/* Descripción del riesgo dentro de la tarjeta */
 .risk-header h5 {
-    font-size: 0.95rem;
+    margin: 0 0 10px 0;
+    font-size: 1rem;
     color: var(--dark-color);
-    margin: 0 0 8px 0;
     line-height: 1.4;
 }
 
-.risk-probability {
-    font-size: 0.8rem;
-    color: var(--gray);
-    background: rgba(0,0,0,0.05);
-    padding: 3px 8px;
-    border-radius: 12px;
-    align-self: flex-start;
-}
-
-.risk-impact {
+/* Meta-información del riesgo (ej. Probabilidad) */
+.risk-meta {
     display: flex;
-    justify-content: flex-end;
+    gap: 10px;
+    /* margin-bottom: 10px; */ /* Ya no es necesario con el gap en risk-details */
+    font-size: 0.8rem;
 }
 
-.impact-tag {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
+/* Estilo para el indicador de probabilidad */
+.probability-badge {
+    background: rgba(0,0,0,0.05); /* Fondo gris muy claro */
     padding: 4px 10px;
-    border-radius: 4px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--dark-color);
 }
 
-.impact-tag.critical {
-    background-color: rgba(231, 76, 60, 0.1);
-    color: var(--danger-color);
+.probability-badge i {
+    color: var(--primary-color); /* Ícono con color primary */
 }
 
-.impact-tag.high {
-    background-color: rgba(241, 196, 15, 0.1);
-    color: var(--warning-color);
+/* Contenedor de los detalles del riesgo (Impacto, Consecuencia) */
+.risk-details {
+    /*display: flex; Removido para permitir que la consecuencia vaya debajo */
+    flex-direction: column; /* Apilar detalles */
+    gap: 10px; /* Espacio entre impacto y consecuencia */
+    margin-top: auto; /* Empuja los detalles hacia abajo */
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .risk-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .risk-card {
-        padding: 12px;
-    }
-}
-/* Transiciones para mejor UX */
-.risk-card, .recommendation-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* Estilo para el indicador de impacto */
+.impact-badge {
+    display: inline-flex; /* Inline-flex para que ocupe solo el ancho necesario */
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    /* margin-bottom: 10px; */ /* Ya no es necesario con el gap en risk-details */
+    text-transform: capitalize; /* Capitalizar el texto del impacto */
 }
 
-.risk-card:hover, .recommendation-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Colores de fondo y texto para el indicador de impacto */
+.impact-badge.critical { background: #ffcdd2; color: #c62828; } /* Rojo más oscuro */
+.impact-badge.high { background: #ffecb3; color: #ffa000; } /* Naranja más oscuro */
+.impact-badge.medium { background: #fff9c4; color: #fbc02d; } /* Amarillo más oscuro */
+.impact-badge.low { background: #c8e6c9; color: #388e3c; } /* Verde más oscuro */
+
+.impact-badge i {
+    font-size: 0.7rem; /* Ícono más pequeño */
 }
 
-/* Loading State */
+/* Estilo para la descripción de la consecuencia */
+.risk-consequence {
+    font-size: 0.9rem;
+    color: var(--dark-color);
+    padding: 10px;
+    background: #f9f9f9; /* Fondo gris muy claro */
+    border-radius: 5px;
+    margin-top: 0; /* Manejado por gap en risk-details */
+    flex-grow: 1; /* Permite que la consecuencia ocupe el espacio restante */
+}
+
+.risk-consequence p {
+    margin: 0; /* Eliminar margen predeterminado del párrafo */
+    line-height: 1.5;
+}
+
+.risk-consequence strong {
+    color: var(--black); /* Un poco más oscuro para la etiqueta */
+}
+
+/* --- Plan de Mitigación --- */
+.mitigation-plan {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    /* Ya no necesita margin-bottom si se usa gap en results-content */
+}
+
+/* Contenedor de las tarjetas de recomendación */
+.recommendations-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Columnas flexibles para tarjetas */
+    gap: 20px; /* Espacio entre tarjetas */
+}
+
+/* Estilo base para cada tarjeta de recomendación */
+.recommendation-card {
+    background: var(--white);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 4px solid var(--success-color); /* Borde izquierdo con color de éxito */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transición al pasar el ratón */
+    display: flex; /* Usar flexbox */
+    flex-direction: column;
+}
+
+/* Efecto al pasar el ratón sobre la tarjeta de recomendación */
+.recommendation-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Encabezado dentro de la tarjeta de recomendación (Número y Riesgo Asociado) */
+.recommendation-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* Número de la recomendación */
+.recommendation-number {
+    background: var(--primary-color);
+    color: var(--white);
+    width: 25px;
+    height: 25px;
+    border-radius: 50%; /* Forma redonda */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+    flex-shrink: 0; /* Evitar que se encoja */
+}
+
+/* Título del riesgo asociado a la recomendación */
+.recommendation-card h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--dark-color);
+    line-height: 1.4;
+}
+
+/* Contenido de la recomendación (la acción) */
+.recommendation-content {
+    font-size: 0.9rem;
+    color: var(--dark-color);
+    margin-top: 0; /* Manejado por gap en el contenedor padre si aplica */
+}
+
+.recommendation-content p {
+    margin: 0; /* Eliminar margen predeterminado del párrafo */
+    line-height: 1.5;
+}
+
+.recommendation-content strong {
+     color: var(--black); /* Un poco más oscuro para la etiqueta */
+}
+
+
+/* ==================== ESTADO DE CARGA ==================== */
+
+/* Contenedor del estado de carga (spinner y texto) */
 .loading-state {
     display: flex;
     flex-direction: column;
@@ -402,54 +631,154 @@
     text-align: center;
 }
 
+/* Spinner de carga */
 .loading-spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
+    border: 4px solid rgba(0, 0, 0, 0.1); /* Borde gris semi-transparente */
     border-radius: 50%;
-    border-top: 4px solid var(--primary-color);
+    border-top: 4px solid var(--primary-color); /* Borde superior de color primario */
     width: 40px;
     height: 40px;
-    animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite; /* Animación de rotación */
     margin-bottom: 20px;
 }
 
+/* Animación de rotación del spinner */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
+/* Texto principal del estado de carga */
 .loading-text {
     font-size: 1rem;
     color: var(--black);
     margin-bottom: 10px;
 }
 
+/* Texto secundario del estado de carga */
 .loading-subtext {
     font-size: 0.85rem;
     color: var(--gray);
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
+
+/* ==================== AJUSTES RESPONSIVOS ==================== */
+
+/* Media query para pantallas pequeñas (menos de 768px) */
+@media (max-width: 767.98px) {
+    /* Ajustar el grid del formulario a una sola columna */
     .form-grid {
         grid-template-columns: 1fr;
     }
-    
+
+    /* Apilar los botones de acción del formulario */
     .form-actions {
         flex-direction: column;
+        gap: 10px; /* Reducir espacio entre botones apilados */
     }
-    
+
+    /* Hacer que los botones apilados ocupen todo el ancho */
     .form-actions button {
         width: 100%;
+        justify-content: center; /* Centrar el contenido del botón (ícono y texto) */
     }
-    
+
+    /* Apilar el encabezado de resultados (título y botón exportar) */
     .results-header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: flex-start; /* Alinear elementos a la izquierda */
         gap: 15px;
     }
-    
+
+    /* Hacer que el botón de exportar apilado ocupe todo el ancho */
     .btn-export {
         width: 100%;
         justify-content: center;
     }
+
+    /* Ajustar el padding del contenedor principal */
+     .analysis-container {
+        padding: 20px;
+    }
+
+    /* Ajustar tamaños de fuente y espaciados en general para pantallas pequeñas */
+    .form-section h3,
+    .results-header h3,
+    .section-title {
+        font-size: 1.1rem;
+    }
+
+    .summary-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Ajustar min-width para tarjetas de resumen */
+        gap: 10px;
+    }
+
+    .summary-card {
+        padding: 10px;
+        min-height: 100px;
+    }
+
+     .summary-value {
+        font-size: 1.8rem;
+    }
+
+     .summary-card h4 {
+        font-size: 0.85rem;
+    }
+
+    .summary-description {
+        font-size: 0.75rem;
+    }
+
+    .risk-cards,
+    .recommendations-container {
+        grid-template-columns: 1fr; /* Una columna para tarjetas de riesgo y recomendación */
+        gap: 15px;
+    }
+
+    .risk-card,
+    .recommendation-card {
+        padding: 12px;
+    }
+
+     .risk-header h5,
+     .recommendation-card h4 {
+        font-size: 0.95rem;
+     }
+
+     .risk-consequence,
+     .recommendation-content {
+        font-size: 0.85rem;
+     }
+
+     .category-title {
+        font-size: 0.95rem;
+        padding: 8px 12px;
+     }
 }
+
+/* Media query para pantallas medianas (768px a 991px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+     /* Ajustes específicos si son necesarios para tablets */
+     .summary-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+     }
+
+     .risk-cards,
+    .recommendations-container {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Podrían ser 2 columnas */
+     }
+}
+
+/* Media query para pantallas grandes (992px y más) */
+@media (min-width: 992px) {
+    /* Estilos para desktop */
+    /* Los estilos por defecto suelen ser para desktop, ajustar si hay overrides */
+}
+
+/*
+.risk-strong {
+    color: rgba(231, 11, 11, 0.63); // Este estilo no parece estar siendo usado por el JS actual.
+    font-weight: 600;
+}
+*/

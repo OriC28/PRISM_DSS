@@ -1,7 +1,7 @@
-from django.shortcuts import render
 from django.views.decorators.http import require_POST
-from .forms import FormAnalyze
 from django.http import JsonResponse
+from django.shortcuts import render
+from .forms import FormAnalyze
 import json
 
 from .utils.get_database_data import get_data
@@ -10,11 +10,24 @@ from .services.api import get_IAresponse
 # Create your views here.
 
 def show_form(request):
+    """"
+    Render the form for analyzing a project.
+
+    Attributes:
+        request (HttpRequest): The HTTP request object.
+    """
     form = FormAnalyze(request.GET or None)
     return render(request, 'analizar-proyecto.html', {'form':form, 'active_page': 'analizar-proyecto'})
 
-@require_POST
+@require_POST 
 def process_data(request):
+    """
+    Process the data from the form and return a JSON response with the anaylisis result.
+    
+    Attributes:
+        request (HttpRequest): The HTTP request object containing the form data.
+    """
+    # Check if the request method is POST
     if request.method != 'POST':
         return JsonResponse({
             'success': False,
@@ -23,6 +36,7 @@ def process_data(request):
 
     form = FormAnalyze(request.POST)
 
+    # Check if the form is valid
     if not form.is_valid():
         return JsonResponse({
             'success': False,
@@ -31,13 +45,15 @@ def process_data(request):
             }, status=400)
     
     try:
-        db_data = json.dumps(get_data(form.cleaned_data['project_type']))
+        # Convert to JSON format
+        db_data = json.dumps(get_data(form.cleaned_data['project_type'])) 
         form_data = form.cleaned_data
-        ia_response = get_IAresponse(form_data, db_data)
+        # Get the IA response from the API
+        response = get_IAresponse(form_data, db_data)
 
         return JsonResponse({
             'success': True,
-            'data': ia_response
+            'data': response
         }, status=200)
 
     except ConnectionError as e:

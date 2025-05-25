@@ -6,6 +6,7 @@ def dashboard(request):
     projects = Proyectos.objects.all()
     risks = Riesgos.objects.all()
     finish_dates = {}
+    finish_date = ""
     for project in projects:
         #Risk filtering
         #risks[str(project.proyecto_id)] = Riesgos.objects.filter(proyecto=project).values('riesgo_id', 'nombre_riesgo', 'estado_riesgo', 'probabilidad', 'impacto', 'mitigacion__nombre_mitigacion')
