@@ -105,12 +105,12 @@
                                     <td>{{risks|count:attr_value}}</td>
                                     {%endwith%}
                                     {%if project.estado_proyecto == 'Finalizado'%}
-                                    <td><span class="status active" style="white-space: nowrap;">{{project.estado_proyecto}}</span></td>
+                                    <td><span class="status active">{{project.estado_proyecto}}</span></td>
                                     {%else%}
-                                    <td><span class="status pending" style="white-space: nowrap;">{{project.estado_proyecto}}</span></td>
+                                    <td><span class="status pending">{{project.estado_proyecto}}</span></td>
                                     {%endif%}
                                     {%if project.estado_proyecto == 'Atrasado'%}
-                                    <td><span class="status delayed" style="white-space: nowrap;">{{project.estado_proyecto}}</span></td>
+                                    <td><span class="status delayed">{{project.estado_proyecto}}</span></td>
                                     {%endif%}
                                     <td><button class="btn"><i class="fas fa-eye"></i></button></td>
                                 </tr>
