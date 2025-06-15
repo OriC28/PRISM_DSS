@@ -26,5 +26,6 @@ def get_prompt(data: dict, db_data: dict) -> str:
     4. Explicar adecuadamente las acciones de mitigación y su relación con los riesgos identificados.
     5. Especifica en un texto si el análisis fue realizado en base a los datos de la base de datos o con el conocimiento general de la IA (tipo de análisis).
     6. Dale prioridad al analisis basado en los datos de la base de datos que te proporciono, si no es posible haz un análisis con tu conocimiento general.
+    7. En los riesgos y mitigaciones basados en la base de datos, incluye el nombre del proyecto de la base de datos al que te refieres.
     """
     return prompt
