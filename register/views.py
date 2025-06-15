@@ -40,7 +40,7 @@ def register(request):
                 for form in project_risk:
                     if form.is_valid():
                         riesgo = Riesgos(
-                            descripcion_riesgo=form.cleaned_data['riskDescription'], # Usar descripcion_riesgo para el modelo Riesgos
+                            nombre_riesgo=form.cleaned_data['riskDescription'], # Usar descripcion_riesgo para el modelo Riesgos
                             mitigacion=form.cleaned_data['riskMitigation'], # ModelChoiceField ya devuelve la instancia
                             probabilidad=form.cleaned_data['riskProbability'],
                             impacto=form.cleaned_data['riskImpact'],
