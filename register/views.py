@@ -1,32 +1,26 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.utils import timezone
-from .forms import RegisterProject, RegisterRisk,RegisterMitigacion,RiskCategory
-from shared.models.dss_models import Proyectos, Riesgos,TipoProyecto,Categorias,AccionesMitigacion,CategoriasRiesgos,Categorias
+from .forms import RegisterProject, RegisterRisk, RegisterMitigacion, RiskCategory
+from shared.models.dss_models import Proyectos, Riesgos, TipoProyecto, Categorias, AccionesMitigacion, CategoriasRiesgos, Categorias
 from django.forms import formset_factory
 
 
 
 def register(request):
-    # Crear formsets para manejar los formularios dinámicos
-    #RegisterFormSetRiskMitigacion_set = formset_factory(RegisterFormSetRiskMitigacion, extra=1)
-    project_riskSet = formset_factory(RegisterRisk, extra=1)
-    project_mitigacionSet = formset_factory(RegisterMitigacion, extra=1)
-    project_categorySet = formset_factory(RiskCategory, extra=1)
+    project_riskSet = formset_factory(RegisterRisk, extra=0)
+    # project_mitigacionSet = formset_factory(RegisterMitigacion, extra=1) # Not used in template, keep for future if needed
+    # project_categorySet = formset_factory(RiskCategory, extra=1) # Not used in template as a separate formset, riskCategory is part of RegisterRisk
 
     if request.method == 'POST':
         project_form = RegisterProject(request.POST)
-
-        # Formsets
         project_risk = project_riskSet(request.POST)
-        project_mitigacion = project_mitigacionSet(request.POST)
-        project_category = project_categorySet(request.POST)
-        #formset = RegisterFormSetRiskMitigacion_set(request.POST)
+        # project_mitigacion = project_mitigacionSet(request.POST)
+        # project_category = project_categorySet(request.POST)
 
-        if project_form.is_valid() and project_risk.is_valid() and project_category.is_valid():
+        if project_form.is_valid() and project_risk.is_valid():
             try:
-                # Guardar proyecto y mostrar datos
-                
+                # Save project
                 proyecto = Proyectos(
                     nombre_proyecto=project_form.cleaned_data['project_name'],
                     tipo_proyecto=project_form.cleaned_data['project_type'],
@@ -40,70 +34,60 @@ def register(request):
                     ubicacion_geografica=project_form.cleaned_data['project_location'],
                     fecha_creacion=timezone.now().date()
                 )
-                proyecto.save()  # Guarda el proyecto en la base de datos
-                print(f'Proyecto guardado con ID: {proyecto.proyecto_id}') 
-                print('Datos del proyecto:', project_form.cleaned_data)
-                
-            
+                proyecto.save()
 
-                # Imprime los datos de cada formulario en los formsets
+                # Save risks
                 for form in project_risk:
                     if form.is_valid():
-                        # Guardar riesgo correctamente, asociándolo al proyecto
                         riesgo = Riesgos(
-                            nombre_riesgo=form.cleaned_data['riskDescription'],
-                            mitigacion=form.cleaned_data['riskMitigation'],
+                            descripcion_riesgo=form.cleaned_data['riskDescription'], # Usar descripcion_riesgo para el modelo Riesgos
+                            mitigacion=form.cleaned_data['riskMitigation'], # ModelChoiceField ya devuelve la instancia
                             probabilidad=form.cleaned_data['riskProbability'],
                             impacto=form.cleaned_data['riskImpact'],
                             estado_riesgo=form.cleaned_data['riskStatus'],
                             proyecto=proyecto,
                         )
-                        riesgo.save()  # Guarda el riesgo en la base de datos
+                        riesgo.save()
 
-                        print(f'ID del Proyecto: {proyecto.proyecto_id} | Datos del riesgo:', form.cleaned_data)
-                    else:
-                        print(f'ID del Proyecto: {proyecto.proyecto_id} | Errores en el formulario de riesgo:', form.errors)
-
-                for form in project_category:
-                    if form.is_valid():
-                        categoria = CategoriasRiesgos(
+                        # For riskCategory, since it's part of RegisterRisk, you'd save it here.
+                        # Assuming riskCategory in RegisterRisk maps directly to a field in Riesgos or through another relation.
+                        # If CategoriasRiesgos is needed:
+                        categoria_riesgo_instance = CategoriasRiesgos(
                             riesgo=riesgo,
-                            categoria=form.cleaned_data['riskCategory'],
+                            categoria=form.cleaned_data['riskCategory'] # ModelChoiceField ya devuelve la instancia
                         )
-                        print('Datos de la categoría de riesgo:', form.cleaned_data)
-                        categoria.save()  # Guarda la categoría en la base de datos
-                    else:
-                        print('Errores en el formulario de categoría:', form.errors)
-
-                """ for form in project_mitigacion:
-                    if form.is_valid():
-                        print('Datos de la mitigación:', form.cleaned_data)
-                    else:
-                        print('Errores en el formulario de mitigación:', form.errors) """
-
-            
-
-                return JsonResponse({'status': 'success', 'message': 'Proyecto registrado!'})
+                        categoria_riesgo_instance.save()
 
             except Exception as e:
                 print('Error al guardar datos:', str(e))
+                return JsonResponse({'status': 'error', 'message': f'Error al guardar datos: {str(e)}'}, status=500)
+
+            return JsonResponse({'status': 'success', 'message': 'Proyecto registrado correctamente!'})
 
         else:
-            print('Errores en el formulario de proyecto:', project_form.errors)
-            return JsonResponse({'status': 'error', 'errors': project_form.errors}, status=400)
+            # Collect all errors from both the main form and the formset
+            errors = {}
+            if project_form.errors:
+                # Django form.errors directly provides a dictionary where values are lists of strings
+                for field, field_errors_list in project_form.errors.items():
+                    errors[field] = field_errors_list # Assign the list of error messages directly
+
+            if project_risk.errors:
+                # Iterate through each form in the formset to get its errors
+                for i, form_errors in enumerate(project_risk.errors):
+                    if form_errors: # Check if there are errors for this specific form
+                        for field, messages in form_errors.items():
+                            # The key for formset errors will be like 'id_form-0-riskDescription'
+                            errors[f'id_form-{i}-{field}'] = messages # Assign the list of error messages directly
+
+            print('Validation Errors:', errors)
+            return JsonResponse({'status': 'error', 'errors': errors, 'message': 'Por favor, corrija los errores en el formulario.'}, status=400)
 
     else:
-        # Inicializar los formularios en GET
         project_form = RegisterProject()
-        project_risk = project_riskSet()
-        project_mitigacion = project_mitigacionSet()
-        project_category = project_categorySet()
-        #formset = RegisterFormSetRiskMitigacion_set()
+        project_risk = project_riskSet() # Initialize an empty formset for GET requests
 
         return render(request, 'registrar-proyecto.html', {
             'project_form': project_form,
-            #'formset': formset,
             'project_risk': project_risk,
-            'project_mitigacion': project_mitigacion,
-            'project_category': project_category,
         })
