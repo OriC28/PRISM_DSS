@@ -1,6 +1,6 @@
 from django import forms
 from shared.models.dss_models import Proyectos, Riesgos,TipoProyecto,Categorias,AccionesMitigacion,CategoriasRiesgos,Categorias
-
+from django.core.validators import RegexValidator
 
 # Asegúrate de tener SOLO estos campos en tu forms.py
 class RegisterProject(forms.Form):
@@ -10,6 +10,13 @@ class RegisterProject(forms.Form):
             required=True,
             max_length=255,
             widget=forms.TextInput(attrs={'id': 'projectName'}),
+            validators=[
+                RegexValidator(
+                    regex=r'^[a-zA-ZäÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ0-9-\s]+$',
+                    message="Sólo se permiten letras, números y guiones."
+                    )
+                ],
+                
             error_messages={
                 'required': 'Este campo es obligatorio',
                 'max_length': 'El nombre del proyecto no puede exceder los 255 caracteres'
@@ -21,7 +28,10 @@ class RegisterProject(forms.Form):
         queryset=TipoProyecto.objects.all(),
         widget=forms.Select(attrs={'id': 'projectType'}),
         initial='1',
-        error_messages={'required': 'Este campo es obligatorio'}
+        error_messages={
+            'required': 'Este campo es obligatorio',
+            'invalid_choice': 'Tipo de proyecto no válido.'
+        }
         )
         
         """ project_type = forms.ChoiceField(
@@ -50,13 +60,22 @@ class RegisterProject(forms.Form):
                 ('Completado', 'Completado'),
             ],
             initial='En planificación',
-            error_messages={'required': 'Este campo es obligatorio'}
+            error_messages={
+            'required': 'Este campo es obligatorio',
+            'invalid_choice': 'Estado de proyecto no válido.'
+        }
         )
         
         project_budget = forms.FloatField(
             label="Presupuesto*",
             required=True,
             widget=forms.NumberInput(attrs={'id': 'projectBudget', 'min':'0', 'step':"0.01"}),
+            validators=[
+                RegexValidator(
+                    regex=r'^(?!0+(\.0*)?$)[+]?(\d+(\.\d*)?|\.\d+)$',
+                    message="Este campo solo puede contener números válidos (enteros)."
+                )
+            ],
             error_messages={
                 'required': 'Este campo es obligatorio',
                 'invalid': 'El presupuesto debe ser un número válido'
@@ -75,7 +94,10 @@ class RegisterProject(forms.Form):
                 
             ],
             initial='USD',
-            error_messages={'required': 'Este campo es obligatorio'}
+            error_messages={
+                'required': 'Este campo es obligatorio',
+                'invalid_choice': 'Tipo de moneda no válido.'
+            }
         )
         
         project_duration = forms.IntegerField(
@@ -83,6 +105,12 @@ class RegisterProject(forms.Form):
             required=True,
             min_value=1,
             widget=forms.NumberInput(attrs={'id': 'projectDuration'}),
+            validators=[
+                RegexValidator(
+                    regex=r'^\d+$',
+                    message="La duración estimada debe ser un número valido."
+                )
+            ],
             error_messages={
                 'required': 'Este campo es obligatorio',
                 'min_value': 'La duración estimada debe ser mayor a 1',
@@ -100,7 +128,10 @@ class RegisterProject(forms.Form):
                 ('Días', 'Días'),
             ],
             initial='Años',
-            error_messages={'required': 'Este campo es obligatorio'}
+            error_messages={
+                'required': 'Este campo es obligatorio',
+                'invalid_choice': 'Tipo de duración no válido.'
+            }
         )
         
         project_location = forms.CharField(
@@ -108,9 +139,16 @@ class RegisterProject(forms.Form):
             required=True,
             max_length=150,
             widget=forms.TextInput(attrs={'id': 'projectLocation'}),
+            validators=[
+                RegexValidator(
+                    regex=r'^[a-zA-ZäÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ0-9-\s]+$',
+                    message="Sólo se permiten letras, números y guiones."
+                    )
+                ],
+                
             error_messages={
                 'required': 'Este campo es obligatorio',
-                'max_length': 'La ubicación geográfica no puede exceder los 150 caracteres'
+                'max_length': 'la Dirección Geográfica no puede exceder los 150 caracteres'
             }
         )
         
@@ -119,6 +157,12 @@ class RegisterProject(forms.Form):
             required=True,
             min_value=0,
             widget=forms.NumberInput(attrs={'id': 'staffCount'}),
+            validators=[
+                RegexValidator(
+                    regex=r'^[1-9]\d*$|^[0-9]\d{1,}$',
+                    message="La cantidad de personal debe ser un número entero válido."
+                )
+            ],
             error_messages={
                 'required': 'Este campo es obligatorio',
                 'min_value': 'La cantidad de personal debe ser mayor a 1',
@@ -131,6 +175,12 @@ class RegisterProject(forms.Form):
             required=True,
             max_length=255,
             widget=forms.Textarea(attrs={'rows': 4, 'id':'projectDescription'}),
+            validators=[
+                RegexValidator(
+                        regex=r"^[a-zA-ZäÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ0-9-\s.,:;¬!'\"()[\]{}@#&\+\*\/_]+$",
+                        message="Sólo se permiten letras, números y guiones."
+                    )
+            ], 
             error_messages={
                 'required': 'Este campo es obligatorio',
                 'max_length': 'La descripción no puede exceder los 255 caracteres'
@@ -182,6 +232,12 @@ class RegisterRisk(forms.Form):
             'name': 'risks[0][description]',
             }
         ),
+        validators=[
+            RegexValidator(
+                regex=r"^[a-zA-ZäÄëËïÏöÖüÜáéíóúáéíóúÁÉÍÓÚÂÊÎÔÛâêîôûàèìòùÀÈÌÒÙñÑ0-9-\s.,:;¬!'\"()[\]{}@#&\+\*\/_]+$",
+                message="Sólo se permiten letras, números y guiones."
+            )
+        ],
         error_messages={
             'required': 'Este campo es obligatorio',
             'max_length': 'La descripción no puede exceder los 255 caracteres'
@@ -198,7 +254,13 @@ class RegisterRisk(forms.Form):
             'id': 'riskProbability1',
             'name': 'risks[0][probability]',
             }
-            ),
+        ),
+        validators=[
+            RegexValidator(
+                regex=r"^(?:100|[1-9]\d)$", # Expresión regular para números del 10 al 100
+                message="El valor debe ser un número positivo entre 10 y 100 (inclusive)."
+            )
+            ],
         error_messages={'required': 'Este campo es obligatorio'}
     )
     
@@ -335,6 +397,10 @@ class RiskCategory(forms.Form):
         'riesgo', #el id
         'categoria',
     ] 
+    def clean_project_name(self):
+        if self.cleaned_data['project_name'].isnumeric():
+            raise forms.ValidationError("El nombre del proyecto no puede ser numérico.")
+        return self.cleaned_data['project_name']
     
     def save(self, Categorias ,CategoriasRiesgos,Riesgo,commit=True):
         # Crear una instancia del modelo Riesgos y mapear los campos
