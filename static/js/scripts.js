@@ -5,7 +5,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainContent = document.getElementById('mainContent');
     const logoutBtn = document.getElementById('logoutBtn');
     const projectsTable = document.getElementById('projectsTable').getElementsByTagName('tbody')[0];
-
+    const riskImpactChart = document.getElementById('riskImpact');
+    const risksDistributionChart = document.getElementById('risksDistribution');
+    const lowRisk = Number(document.getElementById('lowRisk').value);
+    const mediumRisk = Number(document.getElementById('mediumRisk').value);
+    const highRisk = Number(document.getElementById('highRisk').value);
+    document.getElementById('lowRisk').remove();
+    document.getElementById('mediumRisk').remove();
+    document.getElementById('highRisk').remove();
     // Toggle Sidebar
     menuToggle.addEventListener('click', function() {
         sidebar.classList.toggle('active');
@@ -150,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inicializar: obtener los proyectos de la tabla inicial y luego usar projectsFromTable para paginar
     projectsFromTable = readProjectsTableData('projectsTable');
+    let initialProjects = projectsFromTable;
     clearTable();
     renderCurrentPage();
 
@@ -174,9 +182,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const searchTerm = e.target.value.toLowerCase();
         let filteredData;
         if (searchTerm === '') {
-            filteredData = readProjectsTableData('projectsTable');
+            filteredData = initialProjects.slice();
         } else {
-            filteredData = projectsFromTable.filter(project =>
+            filteredData = initialProjects.filter(project =>
                 project.name.toLowerCase().includes(searchTerm) ||
                 project.location.toLowerCase().includes(searchTerm)
             );
@@ -187,7 +195,63 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Simulate chart data (in a real app, you would use a charting library)
-    function simulateCharts() {
+    function drawRiskDistributionChart() {
+        new Chart (risksDistributionChart, {
+            type: 'pie',
+            data: {
+                labels: ['Bajo', 'Medio', 'Alto'],
+                datasets: [{
+                    label: 'Impacto de Riesgos',
+                    data: [lowRisk, mediumRisk, highRisk],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+
+            }
+        })
+    }
+    function drawImpactChart() {
+        new Chart (riskImpactChart, {
+            type: 'bar',
+            data: {
+                labels: ['Bajo', 'Medio', 'Alto'],
+                datasets: [{
+                    label: 'Impacto de Riesgos',
+                    data: [lowRisk, mediumRisk, highRisk],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        })
+    }
+    function nullCharts() {
         document.getElementById('risksByCategoryChart').innerHTML =
             `<div style="text-align: center; padding-top: 120px;">
                 <i class="fas fa-chart-pie" style="font-size: 3rem; color: #ccc;"></i>
@@ -200,9 +264,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>Gráfico de impacto de riesgos</p>
             </div>`;
     }
+    try{
+        drawImpactChart();
+        drawRiskDistributionChart();
+    }
+    catch(e){
+        nullCharts();
 
-    simulateCharts();
-
+    }
     // Responsive adjustments
     function handleResize() {
         if (window.innerWidth > 768 && sidebar.classList.contains('active')) {

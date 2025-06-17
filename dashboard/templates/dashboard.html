@@ -56,17 +56,22 @@
                 </div>
 
                 <!-- Charts Section -->
-                <div class="charts-section">
+                <input type="hidden" id="highRisk" value='{{risks|count:"impacto,Alto"}}'>
+                <input type="hidden" id="mediumRisk" value='{{risks|count:"impacto,Medio"}}'>
+                <input type="hidden" id="lowRisk" value='{{risks|count:"impacto,Bajo"}}'>
+                <div class="charts-section">    
                     <div class="chart-container">
                         <h3>Riesgos por Categoría</h3>
                         <div class="chart" id="risksByCategoryChart">
                             <!-- Chart will be rendered here -->
+                            <canvas id="risksDistribution"></canvas>
                         </div>
                     </div>
                     <div class="chart-container">
                         <h3>Impacto de Riesgos</h3>
                         <div class="chart" id="riskImpactChart">
                             <!-- Chart will be rendered here -->
+                            <canvas id="riskImpact"></canvas>
                         </div>
                     </div>
                 </div>
@@ -77,7 +82,7 @@
                         <h3>Proyectos Recientes</h3>
                         <div class="table-actions">
                             <input type="text" placeholder="Buscar proyecto..." id="projectSearch">
-                            <button class="btn"><i class="fas fa-filter"></i> Filtrar</button>
+                            <button class="btn" type="button" id="filterBtn"><i class="fas fa-filter"></i> Filtrar</button>
                         </div>
                     </div>
                     <div class="table-responsive">
