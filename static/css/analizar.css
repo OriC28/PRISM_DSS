@@ -782,3 +782,22 @@
     font-weight: 600;
 }
 */
+
+/*Botón de ayuda para la descripción*/
+.btn-help{
+    margin-bottom: 8px;
+    gap: 5px;
+}
+
+/*Contenedor del botón de ayuda*/
+.help-content{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+/*Se ajusta el label*/
+.label-content{
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}

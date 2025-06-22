@@ -25,25 +25,3 @@ def count (queryset, attr_value):
     result = result_queryset.count()
     return result
 
-@register.filter
-def count_onqueryset_filter(dictionary, key_attr_value):
-    """ Counts the number of items in a queryset that match the value, the queryset is extracted from the dictionary using the key.
-    The argument key_value is a string that contains the key, the attribute in the queryset to be filtered and 
-    the value separated by a comma.
-    Example: "key, attribute, value"
-
-    Args:
-        dictionary (dict): The dictionary containing the queryset.
-        key_attr_value (str): The key, attribute and value separated by a comma.
-    """
-    #key_attr_value is splitted into separated variables
-    key = key_attr_value.split(",")[0]
-    attribute = key_attr_value.split(",")[1]
-    value = key_attr_value.split(",")[2]
-    if type(dictionary) is not dict:
-        queryset = dictionary
-        result = queryset.filter(**{attribute: value}).count()
-    else:
-        queryset = dictionary.get(str(key))
-        result = queryset.filter(**{attribute: value}).count()
-    return str(result)

@@ -1,0 +1,65 @@
+
+/*Estilos del modal*/
+#dialog {
+    opacity: 0;
+    transition:
+        opacity 0.3s ease-out,
+        transform 0.3s ease-out;
+    transform: translate(-50%, -50%) scale(0.95);
+    will-change: transform, opacity;
+    border-radius: 12px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: min(90vw, 600px);
+    max-width: 95vw;
+    max-height: 90vh;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: auto;
+    padding: 55px;
+    background: white;
+    color: #333;
+}
+
+#dialog[open] {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    @starting-style {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+}
+
+#dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    @starting-style {
+        opacity: 0;
+    }
+}
+
+#dialog[open]::backdrop {
+    opacity: 1;
+}
+
+#dialog:focus-visible {
+    outline: 2px solid #4285f4;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion) {
+    #dialog {
+        transition: none;
+    }
+    #dialog::backdrop {
+        transition: none;
+    }
+}
+
+/*Botón dentro del modal*/
+#ok-button{
+    margin-top: 15px;
+    padding: 10px 20px;
+}

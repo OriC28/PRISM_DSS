@@ -4,9 +4,13 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="/static/css/analizar.css">
+    <link rel="stylesheet" href="/static/css/dialog.css">
 {% endblock %}
 
 {% block content %}
+<!--Dialogo-->
+{% include "dialog.html" %} 
+
 <!-- Main Content -->
 <main class="main-content" id="mainContent">
     <!--Información de la pestaña actual-->
@@ -37,7 +41,8 @@
                     <div class="form-group">
                         <label for="id_project_name">{{ form.project_name.label}}</label>
                         {{form.project_name}}
-                        <div class="field-error" id="project_name_error" style="display: none; color: red;">{{form.project_name.errors}}</div>
+                        <div class="field-error" id="project_name_error" style="display: none; color: red;">
+                            {{form.project_name.errors}}</div>
                     </div>
 
                     <div class="form-group">
@@ -66,7 +71,15 @@
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="projectDescription">{{form.project_description.label}}</label>
+                    <!--Contenedor para el label y botón de Ayuda-->
+                    <div class="help-content">
+                        <div class="label-content">
+                            <label for="projectDescription">{{form.project_description.label}}</label>
+                        </div>
+                        <button onClick="dialog.showModal()" class="btn" id="btn-help" type="button">
+                            <i class="fa-solid fa-circle-info"></i> Ayuda
+                        </button>
+                    </div>
                     {{form.project_description}}
                     <p class="hint">Describe el proyecto con el mayor detalle posible para un análisis más preciso.</p>
                 </div>
@@ -81,7 +94,6 @@
                 </div>
             </form>
         </div>
-
         <!-- Resultados del Análisis -->
         <div class="results-section" id="resultsSection" style="display: none;">
             <div class="results-header">
@@ -92,14 +104,14 @@
             </div>
 
             <div class="results-content" id="resultsContent"></div>
-                
-                <!-- Los resultados se cargarán aquí dinámicamente -->
-            </div>
+
+            <!-- Los resultados se cargarán aquí dinámicamente -->
         </div>
+    </div>
     </div>
 </main>
 {% endblock %}
 
 {% block extra_js %}
-    <script src="/static/js/analizar.js"></script>
+<script src="/static/js/analizar.js"></script>
 {% endblock %}

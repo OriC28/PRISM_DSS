@@ -1,38 +1,12 @@
-# Configuración  
+# DSS que incoorpora la API de Gemini para la gestión de riesgos en proyectos de construcción civil
 
-### Archivo .env: 
+# Módulos
 
-Es un archivo de configuración que almacena variables de entorno (credenciales, claves API, configuraciones sensibles) para aplicaciones.
+## Dashborad
+Este módulo permite al usuario visualizar los datos de los proyectos organizados en una tabla paginada. Además, contiene gráficas.
 
-``` env
-#DATABASE CONNECTION
-DB_HOST = localhost  
-DB_PORT = 3306  
-DB_NAME = dss  
-DB_USER = root  
-DB_PASSWORD = ""  
+## Registrar proyecto
+Permite agregar nuevos proyectos mediante un formulario que incluye los parámetros más relevantes de estos así como los riesgos que se presentaron en los mismos.
 
-#DEEPSEEK API KEY
-API_KEY = ""  
-```
-### Archivo requirements.txt:
-
-Es un archivo de texto que lista las dependencias (paquetes de Python) necesarias para que un proyecto funcione.
-
-```txt
-Django == 5.2
-python-dotenv == 1.1.0
-sqlparse == 0.5.3
-```
-### Archivo .gitignore:  
-
-Es un archivo de texto que le indica a Git qué archivos o carpetas debe ignorar y no subir al repositorio.  
-```txt
-# Variables de entorno
-.env
-# Dependencias
-/.venv
-```
->[!IMPORTANT]
->+ En el archivo requirements.txt están las dependencias a instalar. Utiliza el siguiente comando: `pip install -r requirements.txt`
->+ Para iniciar el proyecto instala todas las dependencias necesarias y utiliza el comando `python manage.py runserver` , luego dirígete a **http://127.0.0.1:8000/**
+## Analizar proyecto (IA)
+Mediante la introducción de un proyecto los datos de este serán utilizados para ser analizados por la IA Gemini. La cual proporcionará los posibles riesgos (con su probabilidad e impacto), así como el plan de mitigación de los mismos.

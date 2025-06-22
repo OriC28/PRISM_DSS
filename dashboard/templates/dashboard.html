@@ -1,8 +1,21 @@
 {% extends "base.html" %}
 {% load date_filter %}
 {% block title %}PRISM DSS - Gestión de Riesgos en Construcción{%endblock%}
-
+{%block extra_css%}
+<link rel="stylesheet" href="/static/css/dialog.css">
+{%endblock%}
 {%block content%}
+{%block extra_js%}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="risk-data" data-high-risks='{{risks|count:"impacto,Alto"}}'
+data-medium-risks='{{risks|count:"impacto,Medio"}}'
+data-low-risks='{{risks|count:"impacto,Bajo"}}'></script>
+
+{{projects_json|json_script:'projects-json'}}
+{{project_types|json_script:'types-json'}}
+<script src="/static/js/scripts.js"></script>
+{%endblock%}
+
     <div class="app-container">
         <!-- Main Content -->
         <main class="main-content" id="mainContent">
@@ -56,9 +69,7 @@
                 </div>
 
                 <!-- Charts Section -->
-                <input type="hidden" id="highRisk" value='{{risks|count:"impacto,Alto"}}'>
-                <input type="hidden" id="mediumRisk" value='{{risks|count:"impacto,Medio"}}'>
-                <input type="hidden" id="lowRisk" value='{{risks|count:"impacto,Bajo"}}'>
+
                 <div class="charts-section">    
                     <div class="chart-container">
                         <h3>Riesgos por Categoría</h3>
@@ -99,27 +110,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Table data will be loaded here -->
-                                 {% for project in projects %}
-                                 <tr>
-                                    <td>{{project.nombre_proyecto}}</td>
-                                    <td>{{project.ubicacion_geografica}}</td>
-                                    <td>{{project.fecha_creacion}}</td>
-                                    <td>{{finish_dates|get_data:project.proyecto_id}}</td>
-                                    {% with attr_value="proyecto,"|concatenate:project.proyecto_id%}
-                                    <td>{{risks|count:attr_value}}</td>
-                                    {%endwith%}
-                                    {%if project.estado_proyecto == 'Finalizado'%}
-                                    <td><span class="status active">{{project.estado_proyecto}}</span></td>
-                                    {%else%}
-                                    <td><span class="status pending">{{project.estado_proyecto}}</span></td>
-                                    {%endif%}
-                                    {%if project.estado_proyecto == 'Atrasado'%}
-                                    <td><span class="status delayed">{{project.estado_proyecto}}</span></td>
-                                    {%endif%}
-                                    <td><button class="btn"><i class="fas fa-eye"></i></button></td>
-                                </tr>
-                                {% endfor %}
+                                <!--Dialogo-->
+                            <dialog id="dialog">
+                                <h2>Especificaciones del proyecto:</h2><br>
+                                <div id='dialog-content' class="text-content">
+                                </div>
+                                </br>
+                                <form>
+                                    <button id="ok-button" class="btn" formmethod="dialog">Aceptar</button>
+                                </form>
+                            </dialog>
+
                             </tbody>
                         </table>
                     </div>
