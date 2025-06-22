@@ -98,9 +98,6 @@
         <div class="results-section" id="resultsSection" style="display: none;">
             <div class="results-header">
                 <h3 class="result-title"></h3>
-                <button class="btn btn-export" id="exportBtn">
-                    <i class="fas fa-file-export"></i> Exportar Informe
-                </button>
             </div>
 
             <div class="results-content" id="resultsContent"></div>
@@ -113,5 +110,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="/static/js/analizar.js"></script>
+<script type="module" src="/static/js/analysis/analysis.js"></script>
 {% endblock %}

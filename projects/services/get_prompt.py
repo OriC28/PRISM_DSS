@@ -20,7 +20,7 @@ def get_prompt(data: dict, db_data: dict) -> str:
     En contraste, si el JSON proporcionado (los proyectos de la base de datos) no es vacío (es decir, distinto a []), identifica todos los riesgos potenciales basados en las coincidencias en Tipo/Función/Presupuesto/Duración/Descripción con proyectos históricos. Luego, genera mitigaciones basadas en estrategias aplicadas en proyectos similares de la base de datos.
 
     Asegúrate de:
-    1. No repetir riesgos o mitigaciones.
+    1. Si varios proyectos tienen los mismos riesgos, agrúpalos y genera una mitigiación común para todos ellos. (Esto para evitar repetir riesgos y mitigaciones).
     2. Que cada riesgo tenga al menos una mitigación asociada.
     3. Si no hay riesgos o mitigaciones, devuelve arrays vacíos.
     4. Explicar adecuadamente las acciones de mitigación y su relación con los riesgos identificados.

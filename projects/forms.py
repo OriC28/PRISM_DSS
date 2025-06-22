@@ -94,9 +94,11 @@ class FormAnalyze(forms.Form):
 
     estimate = forms.FloatField(
         label="Presupuesto (USD)",
+        min_value=1,
         required=True,
         error_messages={
             'required': 'Este campo es obligatorio',
+            'min_value': 'El presupuesto debe ser de al menos 1$',
             'invalid': 'El presupuesto debe ser un número válido'
         }
     )
