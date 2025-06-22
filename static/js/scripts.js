@@ -1,3 +1,5 @@
+let projectsFromTable = JSON.parse(document.getElementById('projects-json').textContent);
+let projectTypes = JSON.parse(document.getElementById('types-json').textContent);
 document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
     const menuToggle = document.getElementById('menuToggle');
@@ -7,12 +9,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const projectsTable = document.getElementById('projectsTable').getElementsByTagName('tbody')[0];
     const riskImpactChart = document.getElementById('riskImpact');
     const risksDistributionChart = document.getElementById('risksDistribution');
-    const lowRisk = Number(document.getElementById('lowRisk').value);
-    const mediumRisk = Number(document.getElementById('mediumRisk').value);
-    const highRisk = Number(document.getElementById('highRisk').value);
-    document.getElementById('lowRisk').remove();
-    document.getElementById('mediumRisk').remove();
-    document.getElementById('highRisk').remove();
+    
+
+    const data = document.querySelector('#risk-data').dataset;
+    const lowRisk = data.lowRisks;
+    const mediumRisk = data.mediumRisks;
+    const highRisk = data.highRisks;
+
     // Toggle Sidebar
     menuToggle.addEventListener('click', function() {
         sidebar.classList.toggle('active');
@@ -50,11 +53,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Start Date
             const startDateCell = row.insertCell(2);
-            startDateCell.textContent = project.startDate;
+            const startDateFormatted = new Date(project.startDate).toLocaleDateString();
+            startDateCell.textContent = startDateFormatted;
 
             // End Date
             const endDateCell = row.insertCell(3);
-            endDateCell.textContent = project.endDate;
+            const endDateFormatted = new Date(project.endDate).toLocaleDateString();
+            endDateCell.textContent = endDateFormatted;
 
             // Risks
             const risksCell = row.insertCell(4);
@@ -126,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Get projects from table, clear table, and use for pagination
-    let projectsFromTable = [];
+
     function refreshProjectsFromTable() {
         projectsFromTable = readProjectsTableData('projectsTable');
         clearTable();
@@ -156,7 +161,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Inicializar: obtener los proyectos de la tabla inicial y luego usar projectsFromTable para paginar
-    projectsFromTable = readProjectsTableData('projectsTable');
     let initialProjects = projectsFromTable;
     clearTable();
     renderCurrentPage();
@@ -196,22 +200,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Simulate chart data (in a real app, you would use a charting library)
     function drawRiskDistributionChart() {
+        labelsUsed = [];
+        datasetsUsed = [];
+        debugger;
+        for (const type of projectTypes) {
+            labelsUsed.push(type.type);
+            datasetsUsed.push(type.count);
+        }
         new Chart (risksDistributionChart, {
             type: 'pie',
             data: {
-                labels: ['Bajo', 'Medio', 'Alto'],
+                labels: labelsUsed,
                 datasets: [{
-                    label: 'Impacto de Riesgos',
-                    data: [lowRisk, mediumRisk, highRisk],
+                    label: 'Riesgos por Categoría',
+                    data: datasetsUsed,
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.2)',
                         'rgba(255, 206, 86, 0.2)',
-                        'rgba(255, 99, 132, 0.2)'
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(99, 193, 255, 0.2)',
+                        'rgba(255, 99, 242, 0.2)'
                     ],
                     borderColor: [
                         'rgba(75, 192, 192, 1)',
                         'rgba(255, 206, 86, 1)',
-                        'rgba(255, 99, 132, 1)'
+                        'rgba(255, 99, 132, 1)',
+                        'rgb(99, 193, 255)',
+                        'rgb(255, 99, 242)'
                     ],
                     borderWidth: 1
                 }]
