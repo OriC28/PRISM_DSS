@@ -297,4 +297,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Reindexar riesgos existentes al cargar la página para asegurar un estado inicial correcto
     // Esto es importante si Django renderiza formularios iniciales
     reindexRisks();
+
+    // Selecciona el dialog y el botón de ayuda
+    const dialog = document.getElementById('dialog');
+    const btnHelp = document.getElementById('btn-help');
+    const okButton = document.getElementById('ok-button');
+
+    // Abre el modal al hacer clic en el botón de ayuda
+    if (btnHelp && dialog) {
+        btnHelp.addEventListener('click', function() {
+            dialog.showModal();
+        });
+    }
+
+    // Cierra el modal al hacer clic en el botón "Cerrar"
+    if (okButton && dialog) {
+        okButton.addEventListener('click', function() {
+            dialog.close();
+        });
+    }
 });

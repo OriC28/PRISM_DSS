@@ -23,9 +23,9 @@ def dashboard(request):
         #Finish date calculation based on duration
         if project.unidad_duracion == 'dias':
             finish_date = project.fecha_creacion + datetime.timedelta(days=project.duracion_estimada)
-        elif project.unidad_duracion == 'meses':
+        elif project.unidad_duracion.lower() == 'meses':
             finish_date = project.fecha_creacion + datetime.timedelta(days=project.duracion_estimada * 30)
-        elif project.unidad_duracion == 'años':
+        elif project.unidad_duracion.lower() == 'años':
             finish_date = project.fecha_creacion + datetime.timedelta(days=project.duracion_estimada * 365)
 
         parsed_data['endDate'] = finish_date
