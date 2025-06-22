@@ -11,11 +11,11 @@ def dashboard(request):
         #Risk filtering
         #risks[str(project.proyecto_id)] = Riesgos.objects.filter(proyecto=project).values('riesgo_id', 'nombre_riesgo', 'estado_riesgo', 'probabilidad', 'impacto', 'mitigacion__nombre_mitigacion')
         #Finish dates calculation
-        if project.unidad_duracion == 'dias':
+        if project.unidad_duracion.lower() == 'dias':
             finish_date = project.fecha_creacion + datetime.timedelta(days=project.duracion_estimada)
-        elif project.unidad_duracion == 'meses':
+        elif project.unidad_duracion.lower() == 'meses':
             finish_date = project.fecha_creacion + datetime.timedelta(days=project.duracion_estimada * 30)
-        elif project.unidad_duracion == 'años':
+        elif project.unidad_duracion.lower() == 'años':
             finish_date = project.fecha_creacion + datetime.timedelta(days=project.duracion_estimada * 365)
         
         finish_dates[str(project.proyecto_id)] = finish_date
