@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const mediumRisk = data.mediumRisks;
     const highRisk = data.highRisks;
 
+    //Dialog Close Button
+    document.getElementById('ok-button').addEventListener('click', function() {
+        document.getElementById('dialog').close();
+    });
+
     // Toggle Sidebar
     menuToggle.addEventListener('click', function() {
         sidebar.classList.toggle('active');
@@ -91,24 +96,36 @@ document.addEventListener('DOMContentLoaded', function() {
             viewBtn.className = 'action-btn';
             viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
             viewBtn.title = 'Ver detalles';
+            
+            viewBtn.addEventListener('click', function() {
+                const dialog = document.getElementById('dialog');
+                const modalContent = document.getElementById('dialog-content');
+                modalContent.innerHTML = '';
 
-            const editBtn = document.createElement('button');
-            editBtn.className = 'action-btn';
-            editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-            editBtn.title = 'Editar';
-
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'action-btn delete';
-            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-            deleteBtn.title = 'Eliminar';
-
+                // Helper para crear y añadir un campo
+                function addField(label, value) {
+                    const p = document.createElement('p');
+                    const strong = document.createElement('strong');
+                    strong.textContent = label + ': ';
+                    p.appendChild(strong);
+                    p.appendChild(document.createTextNode(value));
+                    modalContent.appendChild(p);
+                }
+                addField('Nombre', project.name);
+                addField('Ubicación', project.location);
+                addField('Fecha de Inicio', new Date(project.startDate).toLocaleDateString());
+                addField('Fecha de Fin', new Date(project.endDate).toLocaleDateString());
+                addField('Riesgos', project.risks);
+                addField('Estado', project.status);
+                addField('Descripción', project.description || 'No disponible');
+                addField('Tipo de Proyecto', project.type);
+                addField('Presupuesto', project.budget);
+                addField('Cantidad de Empleados', project.employees_quantity);
+                dialog.showModal();
+            });
             actionsCell.appendChild(viewBtn);
-           //todavia no se si iran esos botones
-            // actionsCell.appendChild(editBtn);
-           // actionsCell.appendChild(deleteBtn);
         });
     }
-
     // Function to read projects from table and return as array of objects
     function readProjectsTableData(tableId) {
         const table = document.getElementById(tableId);
@@ -202,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function drawRiskDistributionChart() {
         labelsUsed = [];
         datasetsUsed = [];
-        debugger;
         for (const type of projectTypes) {
             labelsUsed.push(type.type);
             datasetsUsed.push(type.count);

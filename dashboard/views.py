@@ -1,4 +1,5 @@
 import datetime
+import pdb
 from django.shortcuts import render
 from django.utils.html import escape
 from shared.models.dss_models import Proyectos, Riesgos, TipoProyecto
@@ -14,7 +15,11 @@ def dashboard(request):
         parsed_data['name'] = escape(project.nombre_proyecto)
         parsed_data['location'] = escape(project.ubicacion_geografica)
         parsed_data['startDate'] = project.fecha_creacion
-
+        
+        parsed_data['description'] = escape(project.descripcion)
+        parsed_data['budget'] = project.presupuesto
+        parsed_data['currency'] = escape(project.moneda)
+        parsed_data['employees_quantity'] = project.cantidad_equipo
         #Finish date calculation based on duration
         if project.unidad_duracion == 'dias':
             finish_date = project.fecha_creacion + datetime.timedelta(days=project.duracion_estimada)
@@ -28,6 +33,8 @@ def dashboard(request):
         parsed_data['status'] = escape(project.estado_proyecto)
         
         type = types.filter(tipo_proyecto_id=project.tipo_proyecto_id).first().nombre_tipo
+        parsed_data['type'] = escape(type)
+
         if types_dict.get(type) is None:
             types_dict[type] = 1
         else:

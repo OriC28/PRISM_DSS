@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load date_filter %}
 {% block title %}PRISM DSS - Gestión de Riesgos en Construcción{%endblock%}
-
+{%block extra_css%}
+<link rel="stylesheet" href="/static/css/dialog.css">
+{%endblock%}
 {%block content%}
 {%block extra_js%}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,6 +15,7 @@ data-low-risks='{{risks|count:"impacto,Bajo"}}'></script>
 {{project_types|json_script:'types-json'}}
 <script src="/static/js/scripts.js"></script>
 {%endblock%}
+
     <div class="app-container">
         <!-- Main Content -->
         <main class="main-content" id="mainContent">
@@ -107,7 +110,16 @@ data-low-risks='{{risks|count:"impacto,Bajo"}}'></script>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Table data will be loaded here -->
+                                <!--Dialogo-->
+                            <dialog id="dialog">
+                                <h2>Especificaciones del proyecto:</h2><br>
+                                <div id='dialog-content' class="text-content">
+                                </div>
+                                </br>
+                                <form>
+                                    <button id="ok-button" class="btn" formmethod="dialog">Aceptar</button>
+                                </form>
+                            </dialog>
 
                             </tbody>
                         </table>
