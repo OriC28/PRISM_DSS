@@ -102,15 +102,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 const modalContent = document.getElementById('dialog-content');
                 modalContent.innerHTML = '';
 
+                function truncateText(text, maxLength = 55) {
+                    if (typeof text !== 'string') text = String(text ?? '');
+                    return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+                }
                 // Helper para crear y añadir un campo
                 function addField(label, value) {
                     const p = document.createElement('p');
                     const strong = document.createElement('strong');
                     strong.textContent = label + ': ';
                     p.appendChild(strong);
-                    p.appendChild(document.createTextNode(value));
+                    p.appendChild(document.createTextNode(truncateText(value)));
                     modalContent.appendChild(p);
                 }
+                
                 addField('Nombre', project.name);
                 addField('Ubicación', project.location);
                 addField('Fecha de Inicio', new Date(project.startDate).toLocaleDateString());
