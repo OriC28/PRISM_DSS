@@ -5,6 +5,7 @@
     {% block extra_css %}
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="/static/css/registrar.css">
+    <link rel="stylesheet" href="/static/css/dialog.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
 
@@ -119,6 +120,15 @@
 
                     <div class="form-group full-width">
                         <label for="projectDescription">{{project_form.project_description.label}}</label>
+                            <div class="help-content">
+                                <div class="label-content">
+                                    <label for="projectDescription">{{form.project_description.label}}</label>
+                                </div>
+                                <button class="btn" id="btn-help" type="button">
+                                    <i class="fa-solid fa-circle-info"></i> Ayuda
+                                </button>
+                            </div> 
+                            <br>
                         {{project_form.project_description}}
                         <span class="error-message" id="error-project_description"></span> {# Contenedor de error #}
                     </div>
@@ -193,9 +203,26 @@
             </form>
         </div>
     </main>
+
+    <dialog id="dialog">
+        <div id="dialog-content">
+            <h3>Ayuda para realizar una correcta descripción</h3>
+            <br>
+            <p>Proporciona detalles como:</p>
+            <br>
+            <ul>
+                <li><strong>Materiales:</strong> Ej. "Estructura de acero, acabados en madera y cerámica."</li>
+                <li><strong>Características clave:</strong> Ej. "Casa de 2 pisos con terraza, cocina integrada y paneles solares."</li>
+                <li><strong>Requerimientos técnicos:</strong> Ej. "Cimentación profunda por suelo arcilloso, sistema de recolección de agua pluvial."</li>
+                <li><strong>Contexto:</strong> Ej. "Ubicado en zona sísmica, con normativas de altura específicas."</li>
+            </ul>
+            <button id="ok-button" type="button" class="btn">Aceptar</button>
+        </div>
+    </dialog>
 {% endblock %}
 
 {% block extra_js %}
     {% load static %}
+    <script src="{% static 'js/registrar.js' %}"></script>
     <script src="{% static 'js/registrar.js' %}"></script>
 {% endblock %}
