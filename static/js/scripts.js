@@ -28,10 +28,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Logout Functionality
-    logoutBtn.addEventListener('click', function() {
-        alert('Sesión cerrada con éxito');
-        window.location.href = 'login.html';
-    });
+    //logoutBtn.addEventListener('click', function() {
+    //    alert('Sesión cerrada con éxito');
+    //    window.location.href = '/logout';
+    //});
 
     // Pagination variables
     let currentPage = 1;
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 addField('Nombre', project.name);
                 addField('Ubicación', project.location);
                 addField('Fecha de Inicio', new Date(project.startDate).toLocaleDateString());
-                addField('Fecha de Fin', new Date(project.endDate).toLocaleDateString());
+                addField('Fecha de Fin estimada', new Date(project.endDate).toLocaleDateString());
                 addField('Riesgos', project.risks);
                 addField('Estado', project.status);
                 addField('Descripción', project.description || 'No disponible');

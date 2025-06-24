@@ -4,9 +4,10 @@ from django.utils import timezone
 from .forms import RegisterProject, RegisterRisk, RegisterMitigacion, RiskCategory
 from shared.models.dss_models import Proyectos, Riesgos, TipoProyecto, Categorias, AccionesMitigacion, CategoriasRiesgos, Categorias
 from django.forms import formset_factory
+from django.contrib.auth.decorators import login_required
 
 
-
+@login_required
 def register(request):
     project_riskSet = formset_factory(RegisterRisk, extra=0)
     # project_mitigacionSet = formset_factory(RegisterMitigacion, extra=1) # Not used in template, keep for future if needed

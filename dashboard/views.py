@@ -3,7 +3,9 @@ import pdb
 from django.shortcuts import render
 from django.utils.html import escape
 from shared.models.dss_models import Proyectos, Riesgos, TipoProyecto
+from django.contrib.auth.decorators import login_required
 # Create your views here.
+@login_required(login_url='/login')
 def dashboard(request):
     projects = Proyectos.objects.all()
     risks = Riesgos.objects.all()

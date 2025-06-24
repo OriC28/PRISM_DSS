@@ -1,4 +1,5 @@
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 from .forms import FormAnalyze
@@ -8,7 +9,7 @@ from .utils.get_database_data import get_data
 from .services.api import get_IAresponse
 
 # Create your views here.
-
+@login_required
 def show_form(request):
     """"
     Render the form for analyzing a project.
@@ -20,6 +21,7 @@ def show_form(request):
     return render(request, 'analizar-proyecto.html', {'form':form, 'active_page': 'analizar-proyecto'})
 
 @require_POST 
+@login_required
 def process_data(request):
     """
     Process the data from the form and return a JSON response with the anaylisis result.

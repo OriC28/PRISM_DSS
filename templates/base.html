@@ -20,9 +20,12 @@
             <h1 class="logo">PRISM <span>DSS</span></h1>
         </div>
         <div class="header-right">
-            <button class="logout-btn" id="logoutBtn">
+            <form action="/logout/" method="post">
+                {% csrf_token %}
+                <button class="logout-btn" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-            </button>
+                </button>    
+            </form>
         </div>
     </header>
 
@@ -59,8 +62,6 @@
     <footer>
         <p>© 2025 PRISM DSS</p>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!--<script type="module" src="/static/js/scripts.js"></script>!-->
     {% block extra_js %}{% endblock %}
 </body>
 </html>
